@@ -1,0 +1,98 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button>daw</ion-back-button>
+    </ion-buttons>
+    <ion-title>Register</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" padding>
+  <form #registerForm="ngForm" (ngSubmit)="onRegister(registerForm)"
+    (keyup.enter)="registerForm.valid ? onRegister(registerForm) : 1" style="height: 100%;">
+    <ion-grid style="height: inherit;">
+      <ion-row class="ion-align-items-center" style="height: 100%;">
+        <ion-col offset-sm="3" size-sm="6">
+          <ion-card>
+            <ion-card-header class="ion-text-center">
+              <ion-card-title>
+                <ion-icon name="flash-sharp" color="warning"></ion-icon>
+                Create a Schedent Account
+                <ion-icon name="flash-sharp" color="warning"></ion-icon>
+              </ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+              <ion-item class="item-content">
+                <ion-label position="floating">First Name</ion-label>
+                <ion-input type="firstName" ngModel name="firstName" required #firstNameCtrl="ngModel"></ion-input>
+              </ion-item>
+              <ion-item *ngIf="firstNameCtrl.touched && !firstNameCtrl.valid" lines="none">
+                <ion-label color="danger">Please input your first name!</ion-label>
+              </ion-item>
+
+              <ion-item class="item-content">
+                <ion-label position="floating">Last Name</ion-label>
+                <ion-input type="lastName" ngModel name="lastName" required #lastNameCtrl="ngModel"></ion-input>
+              </ion-item>
+              <ion-item *ngIf="lastNameCtrl.touched && !lastNameCtrl.valid" lines="none">
+                <ion-label color="danger">Please input your last name!</ion-label>
+              </ion-item>
+
+              <ion-item class="item-content">
+                <ion-label position="floating">Email Address</ion-label>
+                <ion-input type="email" ngModel name="email" required #emailAddressCtrl="ngModel" pattern="([a-z]+)([\.])([a-z]+)([\.])([a-z])([0-9])([a-z])(\@)(student)([\.])(ucv)([\.])(ro)"></ion-input>
+              </ion-item>
+              <ion-item *ngIf="emailAddressCtrl.touched && !emailAddressCtrl.valid" lines="none">
+                <ion-label color="danger">Please provide a valid email address!</ion-label>
+              </ion-item>
+
+              <ion-item>
+                <ion-label position="floating">Faculty</ion-label>
+                <ion-select #facultyCtrl (ionChange)="onFacultyChange(facultyCtrl.value)" required name="faculty" mode="ios">
+                  <ion-select-option *ngFor="let faculty of faculties" [value]="faculty.id">{{faculty.name}}</ion-select-option></ion-select>
+              </ion-item>
+
+              <ion-item>
+                <ion-label position="floating">Section</ion-label>
+                <ion-select #sectionCtrl (ionChange)="onSectionChange(sectionCtrl.value)" required name="section" mode="ios">
+                  <ion-select-option *ngFor="let section of sections" [value]="section.id">{{section.name}}</ion-select-option></ion-select>
+              </ion-item>
+
+              <ion-item>
+                <ion-label position="floating">Group</ion-label>
+                <ion-select #groupCtrl (ionChange)="onGroupChange(groupCtrl.value)" required name="group" mode="ios">
+                  <ion-select-option *ngFor="let group of groups" [value]="group.id">{{group.name}}</ion-select-option></ion-select>
+              </ion-item>
+
+              <ion-item>
+                <ion-label position="floating">Subgroup</ion-label>
+                <ion-select #subgroupCtrl (ionChange)="onSubgroupChange(subgroupCtrl.value)" required name="subgroup" mode="ios">
+                  <ion-select-option *ngFor="let subgroup of subgroups" [value]="subgroup.id">{{subgroup.name}}</ion-select-option></ion-select>
+              </ion-item>
+
+              <ion-item>
+                <ion-label position="floating">Password</ion-label>
+                <ion-input type="password" ngModel name="password" required #passCtrl="ngModel" clearOnEdit="false">
+                </ion-input>
+              </ion-item>
+              <ion-item *ngIf="passCtrl.touched && !passCtrl.valid" lines="none">
+                <ion-label color="danger">Please input your password!</ion-label>
+              </ion-item>
+
+              <ion-button type="submit" [disabled]="!registerForm.valid" expand="block">{{isLoading? "": "Register"}}
+                <ion-spinner *ngIf="isLoading"></ion-spinner>
+              </ion-button>
+
+              <ion-item class="ion-text-center" [routerLink]="['/auth']" lines="none">
+                <ion-label color="secondary">
+                  Have an account? Login now!
+                </ion-label>
+              </ion-item>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>

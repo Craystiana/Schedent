@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "Schedent",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}
