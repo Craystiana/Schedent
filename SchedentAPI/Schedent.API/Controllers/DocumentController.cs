@@ -25,11 +25,11 @@ namespace Schedent.API.Controllers
         [HttpPost]
         [Route("Add")]
         [SchedentAuthorize(UserRoleType.Admin)]
-        public IActionResult Add([FromBody] DocumentModel model)
+        public IActionResult Add([FromBody] DocumentModel file)
         {
             try
             {
-                var result = _documentService.Add(model);
+                var result = _documentService.Add(file.File);
 
                 return new JsonResult(result != null);
             }

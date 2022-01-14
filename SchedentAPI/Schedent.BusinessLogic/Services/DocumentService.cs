@@ -1,5 +1,4 @@
-﻿using Schedent.Domain.DTO.Document;
-using Schedent.Domain.Entities;
+﻿using Schedent.Domain.Entities;
 using Schedent.Domain.Interfaces;
 using System;
 
@@ -9,11 +8,11 @@ namespace Schedent.BusinessLogic.Services
     {
         public DocumentService(IUnitOfWork unitOfWork) : base(unitOfWork) { }
 
-        public Document Add(DocumentModel model)
+        public Document Add(string file)
         {
             var document = new Document
             {
-                File = ConvertToByteArray(model.File),
+                File = ConvertToByteArray(file),
                 CreatedOn = DateTime.Now
             };
 
@@ -24,9 +23,9 @@ namespace Schedent.BusinessLogic.Services
             return document;
         }
 
-        public byte[] ConvertToByteArray(string img)
+        public byte[] ConvertToByteArray(string file)
         {
-            return string.IsNullOrEmpty(img) ? null : Convert.FromBase64String(img);
+            return string.IsNullOrEmpty(file) ? null : Convert.FromBase64String(file);
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Schedent.Domain.Entities
         public float Duration { get; set; }
 
         [Required]
-        public DateTime StartsAt { get; set; }
+        public string StartsAt { get; set; }
 
         [Required]
         public DateTime CreatedOn { get; set; }

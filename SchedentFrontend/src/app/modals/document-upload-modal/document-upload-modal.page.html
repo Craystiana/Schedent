@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Add TimeTable</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <form #addDocumentForm="ngForm" (ngSubmit)="onEdit()" style="height: 100%;">
+    <ion-grid style="height: inherit;">
+      <ion-row class="ion-align-items-center" style="height: 100%;">
+        <ion-col offset-sm="3" size-sm="6">
+          <ion-item class="item-content">
+            <ion-label position="stacked">TimeTable</ion-label>
+            <ion-input type="file" ngModel name="file" (change)="onDocumentUpload($event.target.files)"></ion-input>
+          </ion-item>
+          <ion-button type="submit" [disabled]="!addDocumentForm.valid || isDocumentLoaded === false" expand="block">
+            {{isLoading? "": 'Add'}}
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>

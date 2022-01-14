@@ -11,7 +11,6 @@ import { API_URL, DOCUMENT_ADD_URL } from "src/environments/environment";
     }
 
     addDocument(file: string) {
-
         return this.http.post(API_URL + DOCUMENT_ADD_URL, file).pipe(
           map((result: boolean) => {
             return result;

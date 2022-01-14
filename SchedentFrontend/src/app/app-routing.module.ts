@@ -14,6 +14,10 @@ const routes: Routes = [
   {
     path: 'home',
     loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
+  },
+  {
+    path: 'document-upload-modal',
+    loadChildren: () => import('./modals/document-upload-modal/document-upload-modal.module').then( m => m.DocumentUploadModalPageModule)
   }
 ];
 
