@@ -3,6 +3,7 @@ using Schedent.Domain.DTO.User;
 using Schedent.Domain.Entities;
 using Schedent.Domain.Interfaces;
 using System;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -28,7 +29,8 @@ namespace Schedent.BusinessLogic.Services
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     SubgroupId = model.Subgroup,
-                    UserRoleId = (int)UserRoleType.User,
+                    ProfessorId = UnitOfWork.ProfessorRepository.Find(p => p.Name == model.FirstName + " " + model.LastName).FirstOrDefault().ProfessorId,
+                    UserRoleId = model.Subgroup != null ? (int)UserRoleType.Student : (int)UserRoleType.Professor,
                     Salt = salt,
                     PasswordHash = CreatePasswordHash(model.Password, salt)
                 };

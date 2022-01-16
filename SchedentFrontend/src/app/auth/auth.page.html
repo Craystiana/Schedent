@@ -21,7 +21,7 @@
             <ion-card-content>
               <ion-item class="item-content" color="transparent">
                 <ion-label position="floating">Email</ion-label>
-                <ion-input type="email" ngModel name="email" required #userCtrl="ngModel" pattern="([a-z]+)([\.])([a-z]+)([\.])([a-z])([0-9])([a-z])(\@)(student)([\.])(ucv)([\.])(ro)"></ion-input>
+                <ion-input type="email" ngModel name="email" required #userCtrl="ngModel"></ion-input>
               </ion-item>
               <ion-item *ngIf="userCtrl.touched && !userCtrl.valid" lines="none" color="transparent">
                 <ion-label color="danger">Please provide a valid email</ion-label>

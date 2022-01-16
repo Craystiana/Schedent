@@ -68,7 +68,7 @@ namespace Schedent.API
             services.AddScoped<IRepository<Subject>, Repository<Subject>>();
             services.AddScoped<IRepository<Professor>, Repository<Professor>>();
             services.AddScoped<IRepository<ScheduleType>, Repository<ScheduleType>>();
-            services.AddScoped<IRepository<Schedule>, Repository<Schedule>>();
+            services.AddScoped<IScheduleRepository, ScheduleRepository>();
 
             // Services
             services.AddScoped<UserService>();
@@ -77,6 +77,7 @@ namespace Schedent.API
             services.AddScoped<GroupService>();
             services.AddScoped<SubgroupService>();
             services.AddScoped<DocumentService>();
+            services.AddScoped<ScheduleService>();
 
             // JWT authentication
             services.AddAuthentication(options =>

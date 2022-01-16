@@ -14,6 +14,8 @@ export const SECTION_LIST_URL = '/section/all?facultyId=';
 export const GROUP_LIST_URL = '/group/all?sectionId=';
 export const SUBGROUP_LIST_URL = '/subgroup/all?groupId=';
 export const DOCUMENT_ADD_URL = '/document/add';
+export const USER_SCHEDULE_URL = '/schedule/get';
+export const SUBGROUP_SCHEDULE_URL = '/schedule/subgroup?subgroupId=';
 
 /*
  * For easier debugging in development mode, you can import the following file

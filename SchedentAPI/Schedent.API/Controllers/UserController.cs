@@ -9,7 +9,7 @@ namespace Schedent.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : BaseController
     {
         private readonly UserService _userService;
         private readonly ILogger<UserController> _logger;

@@ -3,6 +3,7 @@
     public enum UserRoleType
     {
         Admin = 1,
-        User = 2,
+        Student = 2,
+        Professor = 3
     }
 }

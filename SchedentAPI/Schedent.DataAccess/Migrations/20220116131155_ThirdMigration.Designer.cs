@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Schedent.DataAccess;
 
 namespace Schedent.DataAccess.Migrations
 {
     [DbContext(typeof(SchedentContext))]
-    partial class SchedentContextModelSnapshot : ModelSnapshot
+    [Migration("20220116131155_ThirdMigration")]
+    partial class ThirdMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -292,9 +294,6 @@ namespace Schedent.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ProfessorId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Salt")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -309,8 +308,6 @@ namespace Schedent.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("UserId");
-
-                    b.HasIndex("ProfessorId");
 
                     b.HasIndex("SubgroupId");
 
@@ -433,10 +430,6 @@ namespace Schedent.DataAccess.Migrations
 
             modelBuilder.Entity("Schedent.Domain.Entities.User", b =>
                 {
-                    b.HasOne("Schedent.Domain.Entities.Professor", "Professor")
-                        .WithMany()
-                        .HasForeignKey("ProfessorId");
-
                     b.HasOne("Schedent.Domain.Entities.Subgroup", "Subgroup")
                         .WithMany("Users")
                         .HasForeignKey("SubgroupId");

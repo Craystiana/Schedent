@@ -1,13 +1,72 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Schedule</ion-title>
-
-    <ion-button slot="end" shape="round" title="Add TimeTable" (click)="presentModal()">
+    <ion-button slot="end" *ngIf="authService.isAdmin()" (click)="sections.length > 0 ? loadFaculties() : groups.length > 0 ? loadSections(facultyId, facultyName) : subgroups.length > 0 ? loadGroups(sectionId, sectionName) : loadSubgroups(groupId, groupName)">
+      <ion-icon name="arrow-back"></ion-icon>
+    </ion-button>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{title}}</ion-title>
+    <ion-button *ngIf="authService.isAdmin()" slot="end" shape="round" title="Add TimeTable" (click)="presentModal()">
       <ion-icon name="add-circle-outline"></ion-icon>
     </ion-button>
-
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content mode="ios">
+  <ion-grid mode="ios">
+    <ion-card *ngFor="let faculty of faculties" (click)="loadSections(faculty.id, faculty.name)" color="primary">
+      <ion-card-header mode="ios" class="ion-text-center">
+        <ion-card-title>{{faculty.name}}</ion-card-title>
+      </ion-card-header>
+    </ion-card>
+    <ion-card *ngFor="let section of sections" (click)="loadGroups(section.id, section.name)" color="primary">
+      <ion-card-header mode="ios" class="ion-text-center">
+        <ion-card-title>{{section.name}}</ion-card-title>
+      </ion-card-header>
+    </ion-card>
+    <ion-card *ngFor="let group of groups" (click)="loadSubgroups(group.id, group.name)" color="primary">
+      <ion-card-header mode="ios" class="ion-text-center">
+        <ion-card-title>{{group.name}}</ion-card-title>
+      </ion-card-header>
+    </ion-card>
+    <ion-card *ngFor="let subgroup of subgroups" (click)="loadSubgroupSchedules(subgroup.id, subgroup.name)" color="primary">
+      <ion-card-header mode="ios" class="ion-text-center">
+        <ion-card-title>{{subgroup.name}}</ion-card-title>
+      </ion-card-header>
+    </ion-card>
+    <ion-accordion-group [multiple]="true" *ngFor="let scheduleList of schedules" mode="ios" color="none">
+      <ion-accordion mode="ios" color="none">
+        <ion-card slot="header" mode="ios" color="primary">
+          <ion-card-header mode="ios" class="ion-text-center">
+            <ion-card-title>{{scheduleList.day}}</ion-card-title>
+          </ion-card-header>
+        </ion-card>
+        <ion-card slot="content" style="width:80%; margin-left:auto; margin-right:auto" mode="ios" *ngFor="let schedule of scheduleList.schedules" [color]="schedule.scheduleType === 'Curs' ? 'course' : schedule.scheduleType === 'Laborator' ? 'lab' : schedule.scheduleType === 'Seminar' ? 'seminar' : 'project'">
+          <ion-card-header mode="ios" color="none">
+            <ion-card-subtitle mode="ios">{{schedule.startsAt}}:00</ion-card-subtitle>
+            <ion-card-title mode="ios">{{schedule.subject}}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content mode="ios">
+            <ion-item lines="none" mode="ios" color="none">
+              <ion-icon name="attach-outline" slot="start"></ion-icon>
+              <ion-label>{{schedule.scheduleType}}</ion-label>
+            </ion-item>
+            <ion-item lines="none" mode="ios" color="none">
+              <ion-icon [name]="authService.isProfessor() == true ? 'school-outline' : 'person-circle-outline'" slot="start"></ion-icon>
+              <ion-label>{{authService.isProfessor() == true ? schedule.subgroup : schedule.professor}}</ion-label>
+            </ion-item>
+            <ion-item lines="none" mode="ios" color="none">
+              <ion-icon name="alarm-outline" slot="start"></ion-icon>
+              <ion-label>{{schedule.duration}} ore</ion-label>
+            </ion-item>
+            <ion-item lines="none" mode="ios" *ngIf="schedule.week !== 0" color="none">
+              <ion-icon name="calendar-outline" slot="start"></ion-icon>
+              <ion-label>{{schedule.week === 0 ? 'Fiecare saptamana' : schedule.week === 1 ? 'Saptamana impara' : 'Saptamana para'}}</ion-label>
+            </ion-item>
+          </ion-card-content>
+        </ion-card>
+      </ion-accordion>
+    </ion-accordion-group>
+  </ion-grid>
 </ion-content>

@@ -18,8 +18,9 @@ namespace Schedent.API.Authorization
         {
             _userRoles = new int[]
             {
-               (int) UserRoleType.User,
-               (int) UserRoleType.Admin
+               (int) UserRoleType.Student,
+               (int) UserRoleType.Admin,
+               (int) UserRoleType.Professor
             };
         }
 

@@ -20,8 +20,9 @@ namespace Schedent.Domain.Entities
         [Required]
         public string Email { get; set; }
 
-        [Required]
-        public int SubgroupId { get; set; }
+        public int? SubgroupId { get; set; }
+
+        public int? ProfessorId { get; set; }
 
         [Required]
         public string PasswordHash { get; set; }
@@ -37,5 +38,6 @@ namespace Schedent.Domain.Entities
 
         public virtual UserRole UserRole { get; set; }
         public virtual Subgroup Subgroup { get; set; }
+        public virtual Professor Professor { get; set; }
     }
 }

@@ -42,6 +42,7 @@ export class RegisterPage implements OnInit {
     this.authService.getSectionList(facultyId).pipe(take(1)).subscribe(
       data => {
         this.sections = data;
+        this.faculties = [];
       }
     );
   }

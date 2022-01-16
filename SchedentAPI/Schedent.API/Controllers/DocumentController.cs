@@ -11,7 +11,7 @@ namespace Schedent.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DocumentController : ControllerBase
+    public class DocumentController : BaseController
     {
         private readonly DocumentService _documentService;
         private readonly ILogger<DocumentController> _logger;

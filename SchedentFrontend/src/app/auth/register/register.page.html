@@ -41,7 +41,7 @@
 
               <ion-item class="item-content">
                 <ion-label position="floating">Email Address</ion-label>
-                <ion-input type="email" ngModel name="email" required #emailAddressCtrl="ngModel" pattern="([a-z]+)([\.])([a-z]+)([\.])([a-z])([0-9])([a-z])(\@)(student)([\.])(ucv)([\.])(ro)"></ion-input>
+                <ion-input type="email" ngModel name="email" required #emailAddressCtrl="ngModel" pattern="([a-z]+)([\.])([a-z]+)(?:([\.])([a-z])([0-9])([a-z]))?(\@)(student|edu)([\.])(ucv)([\.])(ro)"></ion-input>
               </ion-item>
               <ion-item *ngIf="emailAddressCtrl.touched && !emailAddressCtrl.valid" lines="none">
                 <ion-label color="danger">Please provide a valid email address!</ion-label>
@@ -49,25 +49,25 @@
 
               <ion-item>
                 <ion-label position="floating">Faculty</ion-label>
-                <ion-select #facultyCtrl (ionChange)="onFacultyChange(facultyCtrl.value)" required name="faculty" mode="ios">
+                <ion-select #facultyCtrl (ionChange)="onFacultyChange(facultyCtrl.value)" name="faculty" mode="ios">
                   <ion-select-option *ngFor="let faculty of faculties" [value]="faculty.id">{{faculty.name}}</ion-select-option></ion-select>
               </ion-item>
 
               <ion-item>
                 <ion-label position="floating">Section</ion-label>
-                <ion-select #sectionCtrl (ionChange)="onSectionChange(sectionCtrl.value)" required name="section" mode="ios">
+                <ion-select #sectionCtrl (ionChange)="onSectionChange(sectionCtrl.value)" name="section" mode="ios">
                   <ion-select-option *ngFor="let section of sections" [value]="section.id">{{section.name}}</ion-select-option></ion-select>
               </ion-item>
 
               <ion-item>
                 <ion-label position="floating">Group</ion-label>
-                <ion-select #groupCtrl (ionChange)="onGroupChange(groupCtrl.value)" required name="group" mode="ios">
+                <ion-select #groupCtrl (ionChange)="onGroupChange(groupCtrl.value)" name="group" mode="ios">
                   <ion-select-option *ngFor="let group of groups" [value]="group.id">{{group.name}}</ion-select-option></ion-select>
               </ion-item>
 
               <ion-item>
                 <ion-label position="floating">Subgroup</ion-label>
-                <ion-select #subgroupCtrl (ionChange)="onSubgroupChange(subgroupCtrl.value)" required name="subgroup" mode="ios">
+                <ion-select #subgroupCtrl (ionChange)="onSubgroupChange(subgroupCtrl.value)" name="subgroup" mode="ios">
                   <ion-select-option *ngFor="let subgroup of subgroups" [value]="subgroup.id">{{subgroup.name}}</ion-select-option></ion-select>
               </ion-item>
 

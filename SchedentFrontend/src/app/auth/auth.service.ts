@@ -90,6 +90,14 @@ export class AuthService {
     }
   }
 
+  public isProfessor(): boolean {
+    if (this.isAuthenticated() === true) {
+      return this.currentUserSubject.value.userRole === UserRole.Professor;
+    } else {
+      return false;
+    }
+  }
+
   login(email: string, password: String) {
     return this.http.post(API_URL + LOGIN_URL, { email, password }).pipe(
       map((user: UserModel) => {

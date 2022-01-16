@@ -6,6 +6,6 @@
 
         public string LastName { get; set; }
 
-        public int Subgroup { get; set; }
+        public int? Subgroup { get; set; }
     }
 }

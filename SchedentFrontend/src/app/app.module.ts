@@ -12,18 +12,17 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthService } from './auth/auth.service';
 
 @NgModule({
-  declarations: [AppComponent],
-  entryComponents: [],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    HttpClientModule,
-    IonicModule.forRoot(),
-    AppRoutingModule
-  ],  providers: [
-    AuthService,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }
-  ],  bootstrap: [AppComponent],
+    declarations: [AppComponent],
+    imports: [
+        BrowserModule,
+        FormsModule,
+        HttpClientModule,
+        IonicModule.forRoot(),
+        AppRoutingModule
+    ], providers: [
+        AuthService,
+        { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+        { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }
+    ], bootstrap: [AppComponent]
 })
 export class AppModule {}
