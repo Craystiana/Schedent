@@ -47,7 +47,7 @@ namespace Schedent.BusinessLogic.Services
         {
             var user = UnitOfWork.UserRepository.Get(email.Replace(" ", string.Empty));
 
-            if (user.PasswordHash == CreatePasswordHash(password, user.Salt))
+            if (user?.PasswordHash == CreatePasswordHash(password, user?.Salt))
             {
                 return user;
             }

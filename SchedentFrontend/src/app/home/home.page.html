@@ -7,7 +7,7 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>{{title}}</ion-title>
-    <ion-button *ngIf="authService.isAdmin()" slot="end" shape="round" title="Add TimeTable" (click)="presentModal()">
+    <ion-button *ngIf="authService.isAdmin()" slot="end" shape="round" title="Orar" (click)="presentModal()">
       <ion-icon name="add-circle-outline"></ion-icon>
     </ion-button>
   </ion-toolbar>
@@ -15,29 +15,29 @@
 
 <ion-content mode="ios">
   <ion-grid mode="ios">
-    <ion-card *ngFor="let faculty of faculties" (click)="loadSections(faculty.id, faculty.name)" color="primary">
+    <ion-card *ngFor="let faculty of faculties" (click)="loadSections(faculty.id, faculty.name)" style="background-color:#493e57">
       <ion-card-header mode="ios" class="ion-text-center">
         <ion-card-title>{{faculty.name}}</ion-card-title>
       </ion-card-header>
     </ion-card>
-    <ion-card *ngFor="let section of sections" (click)="loadGroups(section.id, section.name)" color="primary">
+    <ion-card *ngFor="let section of sections" (click)="loadGroups(section.id, section.name)" style="background-color:#493e57">
       <ion-card-header mode="ios" class="ion-text-center">
         <ion-card-title>{{section.name}}</ion-card-title>
       </ion-card-header>
     </ion-card>
-    <ion-card *ngFor="let group of groups" (click)="loadSubgroups(group.id, group.name)" color="primary">
+    <ion-card *ngFor="let group of groups" (click)="loadSubgroups(group.id, group.name)" style="background-color:#493e57">
       <ion-card-header mode="ios" class="ion-text-center">
         <ion-card-title>{{group.name}}</ion-card-title>
       </ion-card-header>
     </ion-card>
-    <ion-card *ngFor="let subgroup of subgroups" (click)="loadSubgroupSchedules(subgroup.id, subgroup.name)" color="primary">
+    <ion-card *ngFor="let subgroup of subgroups" (click)="loadSubgroupSchedules(subgroup.id, subgroup.name)" style="background-color:#493e57">
       <ion-card-header mode="ios" class="ion-text-center">
         <ion-card-title>{{subgroup.name}}</ion-card-title>
       </ion-card-header>
     </ion-card>
     <ion-accordion-group [multiple]="true" *ngFor="let scheduleList of schedules" mode="ios" color="none">
       <ion-accordion mode="ios" color="none">
-        <ion-card slot="header" mode="ios" color="primary">
+        <ion-card slot="header" mode="ios" style="background-color:#493e57">
           <ion-card-header mode="ios" class="ion-text-center">
             <ion-card-title>{{scheduleList.day}}</ion-card-title>
           </ion-card-header>

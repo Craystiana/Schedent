@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { NgForm } from '@angular/forms';
 import { ModalController, ToastController } from '@ionic/angular';
 import { first, map } from 'rxjs/operators';
 import { API_URL, DOCUMENT_ADD_URL } from 'src/environments/environment';
@@ -34,7 +33,7 @@ export class DocumentUploadModalPage implements OnInit {
       data => {
         if (data === true) {
           this.toastCtrl.create({
-            message: 'TimeTable added succesfully.',
+            message: 'Orar adaugat cu success.',
             duration: 5000,
             position: 'bottom',
             color: 'success',
@@ -44,7 +43,7 @@ export class DocumentUploadModalPage implements OnInit {
         }
         else {
           this.toastCtrl.create({
-            message: 'Something went wrong. Please try again.',
+            message: 'Eroare. Va rugam reincercati.',
             duration: 5000,
             position: 'bottom',
             color: 'danger',
@@ -55,7 +54,7 @@ export class DocumentUploadModalPage implements OnInit {
       },
       error => {
         this.toastCtrl.create({
-          message: 'Something went wrong. Please try again.',
+          message: 'Eroare. Va rugam reincercati.',
           duration: 5000,
           position: 'bottom',
           color: 'danger',

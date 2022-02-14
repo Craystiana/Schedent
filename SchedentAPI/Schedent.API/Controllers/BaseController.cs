@@ -1,15 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Schedent.BusinessLogic.Services;
 using Schedent.Common.Enums;
-using System;
 using System.Linq;
 
 namespace Schedent.API.Controllers
 {
     public class BaseController : ControllerBase
     {
-        public BaseController() { }
-
         /// <summary>
         /// Id of the current user
         /// </summary>

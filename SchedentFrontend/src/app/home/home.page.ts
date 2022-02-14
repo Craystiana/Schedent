@@ -47,6 +47,7 @@ export class HomePage implements OnInit {
     this.homeService.getUserSchedule().pipe(take(1)).subscribe(
       data => {
         this.schedules = data;
+        this.faculties = [];
         this.title = 'Orar';
       }
     );
@@ -121,6 +122,5 @@ export class HomePage implements OnInit {
     });
     return await modal.present();
   }
-
 }
 
