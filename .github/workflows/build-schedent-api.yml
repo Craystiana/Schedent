@@ -19,7 +19,7 @@ jobs:
         dotnet-version: 5.0.x
         
     - name: Restore dependencies
-      run: dotnet restore SchedentAPI\Schedent.API
+      run: dotnet restore SchedentAPI
       
     - name: Build
       run: dotnet build --no-restore SchedentAPI\Schedent.API
