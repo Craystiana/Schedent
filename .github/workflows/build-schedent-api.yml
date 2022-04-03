@@ -29,5 +29,5 @@ jobs:
       with:
         name: api-artifact
         # A file, directory or wildcard pattern that describes what to upload
-        path: SchedentAPI\Schedent.API\bin
+        path: SchedentAPI/Schedent.API/bin
 
