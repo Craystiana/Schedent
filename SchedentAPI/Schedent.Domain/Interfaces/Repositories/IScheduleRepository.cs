@@ -10,5 +10,7 @@ namespace Schedent.Domain.Interfaces.Repositories
         public IEnumerable<Schedule> GetSchedulesForProfessor(int userId);
 
         public IEnumerable<Schedule> GetSchedulesForSubgroup(int subgroupId);
+
+        public IEnumerable<Schedule> GetSchedulesForTimeTable(int timeTableId);
     }
 }

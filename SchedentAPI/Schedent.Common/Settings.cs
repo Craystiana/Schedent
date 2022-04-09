@@ -67,5 +67,20 @@ namespace Schedent.Common
                 return System.Text.Encoding.ASCII.GetBytes(TokenSecret);
             }
         }
+
+        public static Uri ApiUrl
+        {
+            get
+            {
+                var urlString = _configuration["AppSettings:ApiUrl"];
+
+                if (!string.IsNullOrEmpty(urlString))
+                {
+                    return new Uri(urlString);
+                }
+
+                throw new InvalidOperationException("Invalid configuration value for API url");
+            }
+        }
     }
 }

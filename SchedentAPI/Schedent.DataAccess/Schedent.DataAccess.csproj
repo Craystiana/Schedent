@@ -11,6 +11,10 @@
     <Compile Remove="Migrations\20211122205056_InitialCreate.Designer.cs" />
     <Compile Remove="Migrations\20211122205328_InitialCreate.cs" />
     <Compile Remove="Migrations\20211122205328_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20220407165703_AddNotification.cs" />
+    <Compile Remove="Migrations\20220407165703_AddNotification.Designer.cs" />
+    <Compile Remove="Migrations\20220407194930_AddNotification.cs" />
+    <Compile Remove="Migrations\20220407194930_AddNotification.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

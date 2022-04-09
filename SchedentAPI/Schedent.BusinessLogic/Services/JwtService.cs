@@ -14,13 +14,36 @@ namespace Schedent.BusinessLogic.Services
     {
         public static string GenerateToken(User user)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-
             var claims = new List<Claim>
             {
                 new Claim(((int)TokenClaim.UserId).ToString(), user.UserId.ToString()),
                 new Claim(((int)TokenClaim.UserRoleId).ToString(), user.UserRoleId.ToString()),
             };
+
+            return GetToken(claims);
+        }
+
+        public static string GenerateTokenForService()
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(((int)TokenClaim.UserRoleId).ToString(), ((int)UserRoleType.Service).ToString()),
+            };
+
+            return GetToken(claims);
+        }
+
+        public static string GetClaim(TokenClaim claimKey, string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var tokenSecure = handler.ReadToken(token) as JwtSecurityToken;
+
+            return tokenSecure.Claims.First(claim => claim.Type == ((int)claimKey).ToString()).Value;
+        }
+
+        private static string GetToken(IEnumerable<Claim> claims) 
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -32,14 +55,6 @@ namespace Schedent.BusinessLogic.Services
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
-        }
-
-        public static string GetClaim(TokenClaim claimKey, string token)
-        {
-            var handler = new JwtSecurityTokenHandler();
-            var tokenSecure = handler.ReadToken(token) as JwtSecurityToken;
-
-            return tokenSecure.Claims.First(claim => claim.Type == ((int)claimKey).ToString()).Value;
         }
     }
 }

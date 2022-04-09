@@ -77,5 +77,10 @@ namespace Schedent.BusinessLogic.Services
                 return BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
             }
         }
+
+        public User GetUser(int id)
+        {
+            return UnitOfWork.UserRepository.Get(id);
+        }
     }
 }

@@ -17,6 +17,7 @@ namespace Schedent.Domain.Interfaces
         IRepository<TimeTable> TimeTableRepository { get; }
         IRepository<DocumentTimeTable> DocumentTimeTableRepository { get; }
         IRepository<ScheduleType> ScheduleTypeRepository { get; }
+        IRepository<Notification> NotificationRepository { get; }
         IScheduleRepository ScheduleRepository { get; }
         IUserRepository UserRepository { get; }
 

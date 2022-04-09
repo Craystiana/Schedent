@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OfficeOpenXml;
@@ -10,10 +9,6 @@ using Schedent.DataAccess.Repositories;
 using Schedent.Domain.Entities;
 using Schedent.Domain.Interfaces;
 using Schedent.Domain.Interfaces.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Schedent.WorkerService
 {
@@ -30,6 +25,8 @@ namespace Schedent.WorkerService
                 .ConfigureServices((hostContext, services) =>
                 {
                     Settings.SetConfig(hostContext.Configuration);
+
+                    services.AddHttpClient();
 
                     services.AddHostedService<Worker>();
 

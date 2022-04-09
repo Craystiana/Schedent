@@ -17,6 +17,9 @@ using Schedent.Domain.Interfaces.Repositories;
 using System;
 using System.IO;
 using System.Reflection;
+using Schedent.API.Hubs;
+using Microsoft.AspNetCore.SignalR;
+using Schedent.API.Authorization;
 
 namespace Schedent.API
 {
@@ -50,9 +53,9 @@ namespace Schedent.API
 
             services.AddDbContext<SchedentContext>(options => options.UseSqlServer(Settings.DatabaseConnectionString));
 
-            services.AddCors(options => options.AddPolicy("AllowAllOrigins", builder => builder.AllowAnyOrigin()
-                                                                                   .AllowAnyMethod()
-                                                                                   .AllowAnyHeader()));
+            services.AddCors(options => options.AddPolicy("CorsPolicy", builder => builder.AllowAnyHeader()
+                                                                                                          .WithOrigins("http://localhost:8100")
+                                                                                                          .AllowCredentials()));
 
             // UnitOfWork and Repositories
             services.AddScoped<IUnitOfWork, UnitOfWork>(_ => new UnitOfWork(Settings.DatabaseConnectionString));
@@ -97,6 +100,9 @@ namespace Schedent.API
                     ValidateAudience = false
                 };
             });
+
+            services.AddSignalR();
+            services.AddSingleton<IUserIdProvider, UserProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -109,7 +115,7 @@ namespace Schedent.API
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
-
+            
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(options =>
@@ -126,11 +132,12 @@ namespace Schedent.API
 
             app.UseAuthorization();
 
-            app.UseCors("AllowAllOrigins");
+            app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<NotificationHub>("/notificationHub");
             });
         }
     }

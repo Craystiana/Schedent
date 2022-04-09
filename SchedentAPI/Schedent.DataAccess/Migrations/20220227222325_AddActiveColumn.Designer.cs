@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Schedent.DataAccess;
 
 namespace Schedent.DataAccess.Migrations
 {
     [DbContext(typeof(SchedentContext))]
-    partial class SchedentContextModelSnapshot : ModelSnapshot
+    [Migration("20220227222325_AddActiveColumn")]
+    partial class AddActiveColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -95,33 +97,6 @@ namespace Schedent.DataAccess.Migrations
                     b.HasIndex("SectionId");
 
                     b.ToTable("Groups");
-                });
-
-            modelBuilder.Entity("Schedent.Domain.Entities.Notification", b =>
-                {
-                    b.Property<int>("NotificationId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsSent")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SubgroupId")
-                        .HasColumnType("int");
-
-                    b.HasKey("NotificationId");
-
-                    b.HasIndex("SubgroupId");
-
-                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("Schedent.Domain.Entities.Professor", b =>
@@ -387,15 +362,6 @@ namespace Schedent.DataAccess.Migrations
                     b.HasOne("Schedent.Domain.Entities.Section", "Section")
                         .WithMany("Groups")
                         .HasForeignKey("SectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Schedent.Domain.Entities.Notification", b =>
-                {
-                    b.HasOne("Schedent.Domain.Entities.Subgroup", "Subgroup")
-                        .WithMany("Notifications")
-                        .HasForeignKey("SubgroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

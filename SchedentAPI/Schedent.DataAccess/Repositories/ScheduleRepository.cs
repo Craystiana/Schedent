@@ -15,6 +15,7 @@ namespace Schedent.DataAccess.Repositories
             return _context.Users.Where(u => u.UserId == userId)
                                  .Select(u => u.Subgroup)
                                  .SelectMany(s => s.TimeTables)
+                                 .Where(t => t.IsActive)
                                  .SelectMany(t => t.Schedules)
                                  .Include(s => s.Professor)
                                  .Include(s => s.ScheduleType)
@@ -27,6 +28,7 @@ namespace Schedent.DataAccess.Repositories
             return _context.Users.Where(u => u.UserId == userId)
                                  .Select(u => u.Professor)
                                  .SelectMany(p => p.Schedules)
+                                 .Where(s => s.TimeTable.IsActive)
                                  .Include(s => s.Professor)
                                  .Include(s => s.ScheduleType)
                                  .Include(s => s.Subject)
@@ -35,12 +37,19 @@ namespace Schedent.DataAccess.Repositories
 
         public IEnumerable<Schedule> GetSchedulesForSubgroup(int subgroupId)
         {
-            return _context.TimeTables.Where(t => t.SubgroupId == subgroupId)
+            return _context.TimeTables.Where(t => t.SubgroupId == subgroupId && t.IsActive)
                                       .SelectMany(t => t.Schedules)
                                       .Include(s => s.Professor)
                                       .Include(s => s.ScheduleType)
                                       .Include(s => s.Subject)
                                       .Include(s => s.TimeTable.Subgroup.Group.Section);
+        }
+
+        public IEnumerable<Schedule> GetSchedulesForTimeTable(int timeTableId)
+        {
+            return _context.Schedules.Where(s => s.TimeTableId == timeTableId)
+                                     .Include(s => s.Professor)
+                                     .Include(s => s.Subject);
         }
     }
 }

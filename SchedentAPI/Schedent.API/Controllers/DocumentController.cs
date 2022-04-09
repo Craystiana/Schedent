@@ -6,6 +6,9 @@ using Schedent.Common.Enums;
 using Schedent.Domain.DTO.Document;
 using System;
 using System.Net;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
+using Schedent.API.Hubs;
 
 namespace Schedent.API.Controllers
 {
@@ -15,11 +18,15 @@ namespace Schedent.API.Controllers
     {
         private readonly DocumentService _documentService;
         private readonly ILogger<DocumentController> _logger;
+        private readonly IHubContext<NotificationHub> _notificationHub;
+        private readonly UserService _userService;
 
-        public DocumentController(DocumentService documentService, ILogger<DocumentController> logger)
+        public DocumentController(DocumentService documentService, ILogger<DocumentController> logger, IHubContext<NotificationHub> notificationHub, UserService userService)
         {
             _documentService = documentService;
             _logger = logger;
+            _notificationHub = notificationHub;
+            _userService = userService;
         }
 
         [HttpPost]
@@ -32,6 +39,23 @@ namespace Schedent.API.Controllers
                 var result = _documentService.Add(file.File);
 
                 return new JsonResult(result != null);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost]
+        [Route("Upload")]
+        public async Task<ActionResult> Upload()
+        {
+            try
+            {
+                await _notificationHub.Clients.User("13").SendAsync("ReceiveOne", "New schedule!");
+
+                return Ok();
             }
             catch(Exception ex)
             {

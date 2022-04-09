@@ -11,6 +11,9 @@ namespace Schedent.Domain.Entities
         [Required]
         public int SubgroupId { get; set; }
 
+        [Required]
+        public bool IsActive { get; set; }
+
         public virtual Subgroup Subgroup { get; set; }
         public virtual ICollection<Schedule> Schedules { get; set; }
         public virtual ICollection<DocumentTimeTable> DocumentTimeTables { get; set; }

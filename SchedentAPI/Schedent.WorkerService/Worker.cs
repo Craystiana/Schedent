@@ -20,11 +20,17 @@ namespace Schedent.WorkerService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(1000, stoppingToken);
-                _importService.ImportTimeTable();
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                    await Task.Delay(1000, stoppingToken);
+                    _importService.ImportTimeTableAsync();
+                }
+            } catch (Exception ex)
+            {
+                _logger.LogError("Error: ", ex);
             }
         }
     }

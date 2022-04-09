@@ -20,6 +20,7 @@ namespace Schedent.DataAccess
         public virtual DbSet<DocumentTimeTable> DocumentTimeTables { get; set; }
         public virtual DbSet<ScheduleType> ScheduleTypes { get; set; }
         public virtual DbSet<Schedule> Schedules { get; set; }
+        public virtual DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,6 +35,10 @@ namespace Schedent.DataAccess
                         .WithMany(sub => sub.Schedules)
                         .HasForeignKey(sch => sch.TimeTableId)
                         .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<TimeTable>()
+                        .Property(tt => tt.IsActive)
+                        .HasDefaultValue(true);
 
             base.OnModelCreating(modelBuilder);
         }

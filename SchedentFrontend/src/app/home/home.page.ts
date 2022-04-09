@@ -5,6 +5,7 @@ import { AuthService } from '../auth/auth.service';
 import { DocumentUploadModalPage } from '../modals/document-upload-modal/document-upload-modal.page';
 import { Generic } from '../models/generic/generic';
 import { ScheduleListModel } from '../models/schedule/scheduleListModel';
+import { NotificationService } from '../services/notification.service';
 import { HomeService } from './home.service';
 
 @Component({
@@ -30,9 +31,19 @@ export class HomePage implements OnInit {
   public subgroupName: string;
   public title: string;
 
-  constructor(private homeService: HomeService, public modalController: ModalController, private authService : AuthService) {}
+  constructor(private homeService: HomeService, public modalController: ModalController, private authService : AuthService, private notificationService : NotificationService) {
+    this.connect();
+  }
 
   ngOnInit() {
+  }
+
+  async connect(){
+    this.notificationService.retrieveMappedObject().subscribe(
+      (receivedObj: string) => {
+        console.log(receivedObj);
+      }
+    );
   }
 
   ionViewWillEnter() {
@@ -121,6 +132,10 @@ export class HomePage implements OnInit {
       cssClass: 'my-custom-class'
     });
     return await modal.present();
+  }
+
+  async foo() {
+    await this.notificationService.connect(this.authService.currentUserValue().token);
   }
 }
 

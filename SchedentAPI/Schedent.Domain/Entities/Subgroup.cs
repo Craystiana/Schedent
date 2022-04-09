@@ -17,5 +17,6 @@ namespace Schedent.Domain.Entities
         public virtual Group Group { get; set; }
         public virtual ICollection<User> Users { get; set; }
         public virtual ICollection<TimeTable> TimeTables { get; set; }
+        public virtual ICollection<Notification> Notifications { get; set; }
     }
 }
