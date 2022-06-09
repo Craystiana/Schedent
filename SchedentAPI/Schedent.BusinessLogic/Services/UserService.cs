@@ -78,9 +78,32 @@ namespace Schedent.BusinessLogic.Services
             }
         }
 
-        public User GetUser(int id)
+        public UserDetails GetUserDetails(int userId)
         {
-            return UnitOfWork.UserRepository.Get(id);
+            var user = UnitOfWork.UserRepository.GetDetails(userId);
+
+            return new UserDetails
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                EmailAddress = user.Email,
+                FacultyId = user.Subgroup.Group.Section.FacultyId,
+                SectionId = user.Subgroup.Group.SectionId,
+                GroupId = user.Subgroup.GroupId,
+                SubgroupId = (int)user.SubgroupId,
+            };
+        }
+
+        public void EditProfile(UserDetails model, int userId)
+        {
+            var user = UnitOfWork.UserRepository.Get(userId);
+
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.Email = model.EmailAddress;
+            user.SubgroupId = model.SubgroupId;
+
+            UnitOfWork.SaveChanges();
         }
     }
 }

@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
-import { take } from 'rxjs/operators';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { ModalController, IonContent } from '@ionic/angular';
+import { first, take } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
 import { DocumentUploadModalPage } from '../modals/document-upload-modal/document-upload-modal.page';
 import { Generic } from '../models/generic/generic';
@@ -30,32 +31,34 @@ export class HomePage implements OnInit {
   public subgroupId: Generic[];
   public subgroupName: string;
   public title: string;
+  public shouldShowFab: boolean = false;
+  @ViewChild(IonContent) content: IonContent;
 
-  constructor(private homeService: HomeService, public modalController: ModalController, private authService : AuthService, private notificationService : NotificationService) {
-    this.connect();
-  }
+  constructor(private homeService: HomeService, private router: Router, public modalController: ModalController, private authService : AuthService, private notificationService : NotificationService) { }
 
   ngOnInit() {
   }
 
-  async connect(){
-    this.notificationService.retrieveMappedObject().subscribe(
-      (receivedObj: string) => {
-        console.log(receivedObj);
-      }
-    );
-  }
-
   ionViewWillEnter() {
-    if (this.authService.isAdmin() === true) {
+    if (this.authService.isAdmin()) {
       this.loadFaculties();
     } else {
       this.loadUserSchedules();
     }
   }
 
+  onScroll(event) {
+    this.shouldShowFab = event.detail.scrollTop > window.innerHeight / 2;
+  }
+
+  scrollTo(elementId: string) {
+    let y = document.getElementById(elementId).getBoundingClientRect().y;
+    let header = document.getElementById("header").getBoundingClientRect().height;
+    this.content.scrollToPoint(0, y - header, 500);
+  }
+
   loadUserSchedules() {
-    this.homeService.getUserSchedule().pipe(take(1)).subscribe(
+    this.homeService.getUserSchedule().pipe(first()).subscribe(
       data => {
         this.schedules = data;
         this.faculties = [];
@@ -65,7 +68,7 @@ export class HomePage implements OnInit {
   }
 
   loadFaculties() {
-    this.authService.getFacultyList().pipe(take(1)).subscribe(
+    this.authService.getFacultyList().pipe(first()).subscribe(
       data => {
         this.faculties = data;
         this.schedules = [];
@@ -76,7 +79,7 @@ export class HomePage implements OnInit {
   }
 
   loadSections(facultyId, facultyName) {
-    this.authService.getSectionList(facultyId).pipe(take(1)).subscribe(
+    this.authService.getSectionList(facultyId).pipe(first()).subscribe(
       data => {
         this.sections = data;
         this.faculties = [];
@@ -89,7 +92,7 @@ export class HomePage implements OnInit {
   }
 
   loadGroups(sectionId, sectionName) {
-    this.authService.getGroupList(sectionId).pipe(take(1)).subscribe(
+    this.authService.getGroupList(sectionId).pipe(first()).subscribe(
       data => {
         this.groups = data;
         this.sections = [];
@@ -102,7 +105,7 @@ export class HomePage implements OnInit {
   }
 
   loadSubgroups(groupId, groupName) {
-    this.authService.getSubgroupList(groupId).pipe(take(1)).subscribe(
+    this.authService.getSubgroupList(groupId).pipe(first()).subscribe(
       data => {
         this.subgroups = data;
         this.groups = [];
@@ -115,7 +118,7 @@ export class HomePage implements OnInit {
   }
 
   loadSubgroupSchedules(subgroupId, subgroupName) {
-    this.homeService.getSubgroupSchedule(subgroupId).pipe(take(1)).subscribe(
+    this.homeService.getSubgroupSchedule(subgroupId).pipe(first()).subscribe(
       data => {
         this.schedules = data;
         this.subgroups = [];
@@ -132,10 +135,6 @@ export class HomePage implements OnInit {
       cssClass: 'my-custom-class'
     });
     return await modal.present();
-  }
-
-  async foo() {
-    await this.notificationService.connect(this.authService.currentUserValue().token);
   }
 }
 

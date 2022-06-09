@@ -64,5 +64,37 @@ namespace Schedent.API.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }
+
+        [HttpGet]
+        [Route("Details")]
+        public IActionResult GetUserDetails()
+        {
+            try
+            {
+                return new JsonResult(_userService.GetUserDetails((int)CurrentUserId));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while getting the user details");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost]
+        [Route("Profile")]
+        public IActionResult Profile([FromBody] UserDetails profile)
+        {
+            try
+            {
+                _userService.EditProfile(profile, (int)CurrentUserId);
+
+                return new JsonResult(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while getting the user details");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
     }
 }

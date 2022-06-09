@@ -114,7 +114,6 @@ export class AuthService {
   }
 
   register(model: RegisterModel) {
-
     return this.http.post(API_URL + REGISTER_URL, model).pipe(
       map((result: boolean) => {
         return result;

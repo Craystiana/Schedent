@@ -3,7 +3,6 @@ import { Injectable } from "@angular/core";
 import { map } from "rxjs/operators";
 import { API_URL, DOCUMENT_ADD_URL, SUBGROUP_SCHEDULE_URL, USER_SCHEDULE_URL } from "src/environments/environment";
 import { ScheduleListModel } from "../models/schedule/scheduleListModel";
-import { ScheduleModel } from "../models/schedule/scheduleModel";
 
 @Injectable({
     providedIn: 'root'

@@ -22,9 +22,7 @@ export class RegisterPage implements OnInit {
   public isLoading: boolean;
   constructor(private authService: AuthService, private router: Router, private toastCtrl: ToastController) { }
 
-  ngOnInit() {
-
-  }
+  ngOnInit() { }
 
   ionViewWillEnter() {
     this.loadData();

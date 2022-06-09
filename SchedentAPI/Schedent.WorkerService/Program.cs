@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OfficeOpenXml;
+using Schedent.BusinessLogic.Config;
 using Schedent.BusinessLogic.Services;
 using Schedent.Common;
 using Schedent.DataAccess;
@@ -50,6 +51,7 @@ namespace Schedent.WorkerService
 
                     // Services
                     services.AddTransient<ImportService>();
+                    services.Configure<GoogleCalendarSettings>(hostContext.Configuration.GetSection(nameof(GoogleCalendarSettings)));
 
                     ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 });

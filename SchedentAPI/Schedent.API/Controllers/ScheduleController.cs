@@ -39,7 +39,7 @@ namespace Schedent.API.Controllers
         public IActionResult GetSchedulesForSubgroup([FromQuery] int subgroupId)
         {
             try
-            {
+            { 
                 return new JsonResult(_scheduleService.GetSubgroupTimeTable(subgroupId));
             }
             catch (Exception ex)

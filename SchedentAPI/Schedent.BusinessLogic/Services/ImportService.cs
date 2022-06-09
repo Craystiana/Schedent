@@ -1,5 +1,13 @@
-﻿using OfficeOpenXml;
+﻿using Google.Apis.Auth.OAuth2;
+using Google.Apis.Calendar.v3;
+using Google.Apis.Calendar.v3.Data;
+using Google.Apis.Services;
+using Google.Apis.Util.Store;
+using Microsoft.Extensions.Options;
+using OfficeOpenXml;
+using Schedent.BusinessLogic.Config;
 using Schedent.BusinessLogic.Factories;
+using Schedent.Common.Enums;
 using Schedent.Domain.DTO.Import;
 using Schedent.Domain.Entities;
 using Schedent.Domain.Interfaces;
@@ -7,13 +15,18 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace Schedent.BusinessLogic.Services
 {
     public class ImportService : BaseService
     {
-        public ImportService(IUnitOfWork unitOfWork) : base(unitOfWork) { }
+        private readonly GoogleCalendarSettings _googleCalendarSettings;
+
+        public ImportService(IUnitOfWork unitOfWork, IOptions<GoogleCalendarSettings> googleCalendarSettings) : base(unitOfWork) 
+        { 
+            _googleCalendarSettings = googleCalendarSettings.Value;
+        }
 
         public IEnumerable<Document> GetDocumentsToImport()
         {
@@ -100,6 +113,7 @@ namespace Schedent.BusinessLogic.Services
                 UnitOfWork.ScheduleRepository.AddRange(schedules);
 
                 AddNotifications(timeTable);
+                AddEvents(timeTable);
                 InactivateSubgroupTimeTable(timeTable.SubgroupId);
             }
 
@@ -185,6 +199,73 @@ namespace Schedent.BusinessLogic.Services
             }
 
             UnitOfWork.NotificationRepository.AddRange(notifications);
+        }
+
+        public void AddEvents(TimeTable timeTable)
+        {
+            foreach (var schedule in timeTable.Schedules)
+            {
+                CreateEvent(schedule);
+            }
+        }
+
+        public CalendarService GetService()
+        {
+            string[] Scopes = { CalendarService.Scope.Calendar };
+
+            var clientSecret = new ClientSecrets
+            {
+                ClientId = _googleCalendarSettings.ClientId,
+                ClientSecret = _googleCalendarSettings.ClientSecret
+            };
+
+            string credPath = "token.json";
+
+            return new CalendarService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = GoogleWebAuthorizationBroker.AuthorizeAsync(clientSecret, Scopes, "user", CancellationToken.None, new FileDataStore(credPath, true)).Result
+            });
+        }
+
+        public void CreateEvent(Schedule schedule)
+        {
+            var semDayStart = "21";
+            var semMonthStart = "02";
+            var yearStart = "2022";
+            var atendeeEmails = UnitOfWork.UserRepository.Find(u => u.SubgroupId == schedule.TimeTable.SubgroupId)
+                                                         .Select(u => new EventAttendee
+                                                         {
+                                                             Email = u.Email
+                                                         }).ToList();
+
+            var ev = new Event
+            {
+                Summary = schedule.Subject.Name,
+                Start = new EventDateTime
+                {
+                    DateTime = Convert.ToDateTime((int.Parse(semDayStart) + (int)Enum.Parse(typeof(WeekDays), schedule.Day)).ToString() + "/" + semMonthStart + "/" + yearStart + " " + schedule.StartsAt + ":00:00"),
+                    TimeZone = "Europe/Bucharest"
+                },
+                End = new EventDateTime
+                {
+                    DateTime = Convert.ToDateTime((int.Parse(semDayStart) + (int)Enum.Parse(typeof(WeekDays), schedule.Day)).ToString() + "/" + semMonthStart + "/" + yearStart + " " + (int.Parse(schedule.StartsAt) + schedule.Duration).ToString() + ":00:00"),
+                    TimeZone = "Europe/Bucharest"
+                },
+                Recurrence = new String[]
+                {
+                    "RRULE:FREQ=WEEKLY;UNTIL=20220508T200000Z"
+                },
+                Attendees = new List<EventAttendee>() { new EventAttendee
+                {
+                    Email = "cristinamadalinaprodan@gmail.com",
+                }, 
+                new EventAttendee
+                {
+                    Email = "prodan.cristiana.c3s@student.ucv.ro",
+                }}
+            };
+
+            GetService().Events.Insert(ev, "primary").Execute();
         }
     }
 }

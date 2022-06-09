@@ -29,4 +29,23 @@
     </ion-content>
   </ion-menu>
   <ion-router-outlet id="menuContent"></ion-router-outlet>
+
+  <ion-tabs>
+    <ion-tab-bar slot="bottom" color="primary">
+      <ion-tab-button tab="home">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <ion-label>Orar</ion-label>
+      </ion-tab-button>
+  
+      <ion-tab-button tab="notification">
+        <ion-icon name="notifications-outline"></ion-icon>
+        <ion-label>Notificari</ion-label>
+      </ion-tab-button>
+  
+      <ion-tab-button tab="profile">
+        <ion-icon name="person-outline"></ion-icon>
+        <ion-label>Profil</ion-label>
+      </ion-tab-button>
+    </ion-tab-bar>
+  </ion-tabs>
 </ion-app>

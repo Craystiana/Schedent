@@ -20,6 +20,7 @@ using System.Reflection;
 using Schedent.API.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Schedent.API.Authorization;
+using Schedent.BusinessLogic.Config;
 
 namespace Schedent.API
 {
@@ -81,6 +82,10 @@ namespace Schedent.API
             services.AddScoped<SubgroupService>();
             services.AddScoped<DocumentService>();
             services.AddScoped<ScheduleService>();
+            services.AddScoped<NotificationService>();
+            services.AddScoped<GoogleCalendarService>();
+
+            services.Configure<GoogleCalendarSettings>(Configuration.GetSection(nameof(GoogleCalendarSettings)));
 
             // JWT authentication
             services.AddAuthentication(options =>

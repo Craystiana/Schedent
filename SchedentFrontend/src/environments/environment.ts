@@ -16,6 +16,9 @@ export const SUBGROUP_LIST_URL = '/subgroup/all?groupId=';
 export const DOCUMENT_ADD_URL = '/document/add';
 export const USER_SCHEDULE_URL = '/schedule/get';
 export const SUBGROUP_SCHEDULE_URL = '/schedule/subgroup?subgroupId=';
+export const NOTIFICATION_LIST_URL = '/notification/all';
+export const USER_DETAILS_URL = '/user/details';
+export const EDIT_PROFILE_URL = '/user/profile';
 
 /*
  * For easier debugging in development mode, you can import the following file
