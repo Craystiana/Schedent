@@ -21,6 +21,8 @@ using Schedent.API.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Schedent.API.Authorization;
 using Schedent.BusinessLogic.Config;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 
 namespace Schedent.API
 {
@@ -54,9 +56,9 @@ namespace Schedent.API
 
             services.AddDbContext<SchedentContext>(options => options.UseSqlServer(Settings.DatabaseConnectionString));
 
-            services.AddCors(options => options.AddPolicy("CorsPolicy", builder => builder.AllowAnyHeader()
-                                                                                                          .WithOrigins("http://localhost:8100")
-                                                                                                          .AllowCredentials()));
+            services.AddCors(options => options.AddPolicy("AllowAllOrigins", builder => builder.AllowAnyOrigin()
+                                                                                   .AllowAnyMethod()
+                                                                                   .AllowAnyHeader()));
 
             // UnitOfWork and Repositories
             services.AddScoped<IUnitOfWork, UnitOfWork>(_ => new UnitOfWork(Settings.DatabaseConnectionString));
@@ -86,6 +88,7 @@ namespace Schedent.API
             services.AddScoped<GoogleCalendarService>();
 
             services.Configure<GoogleCalendarSettings>(Configuration.GetSection(nameof(GoogleCalendarSettings)));
+            services.Configure<FirebaseSettings>(Configuration.GetSection(nameof(FirebaseSettings)));
 
             // JWT authentication
             services.AddAuthentication(options =>
@@ -108,6 +111,12 @@ namespace Schedent.API
 
             services.AddSignalR();
             services.AddSingleton<IUserIdProvider, UserProvider>();
+
+            FirebaseApp.Create(new AppOptions()
+            {
+                Credential = GoogleCredential.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "firebase_settings.json")),
+            });
+            services.AddApplicationInsightsTelemetry();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -137,7 +146,7 @@ namespace Schedent.API
 
             app.UseAuthorization();
 
-            app.UseCors("CorsPolicy");
+            app.UseCors("AllowAllOrigins");
 
             app.UseEndpoints(endpoints =>
             {

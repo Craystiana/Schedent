@@ -52,6 +52,7 @@ namespace Schedent.WorkerService
                     // Services
                     services.AddTransient<ImportService>();
                     services.Configure<GoogleCalendarSettings>(hostContext.Configuration.GetSection(nameof(GoogleCalendarSettings)));
+                    services.Configure<FirebaseSettings>(hostContext.Configuration.GetSection(nameof(FirebaseSettings)));
 
                     ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 });

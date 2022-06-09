@@ -96,5 +96,22 @@ namespace Schedent.API.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }
+
+        [HttpPut]
+        [Route("DeviceToken")]
+        public IActionResult DeviceToken([FromBody] string token)
+        {
+            try
+            {
+                _userService.EditDeviceToken((int)CurrentUserId, token);
+
+                return new JsonResult(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while editing the user device token");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
     }
 }

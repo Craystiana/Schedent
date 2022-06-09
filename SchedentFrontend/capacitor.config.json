@@ -1,6 +1,9 @@
 {
-	"appId": "io.ionic.starter",
+	"appId": "io.ionic.schedent",
 	"appName": "Schedent",
 	"webDir": "www",
-	"bundledWebRuntime": false
+	"bundledWebRuntime": false,
+	"plugins": {
+		"PushNotifications": ["badge", "sound", "alert"]
+	}
 }

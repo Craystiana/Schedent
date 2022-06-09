@@ -8,6 +8,12 @@ import { Generic } from '../models/generic/generic';
 import { ScheduleListModel } from '../models/schedule/scheduleListModel';
 import { NotificationService } from '../services/notification.service';
 import { HomeService } from './home.service';
+import {
+  ActionPerformed,
+  PushNotificationSchema,
+  PushNotifications,
+  Token,
+} from '@capacitor/push-notifications';
 
 @Component({
   selector: 'app-home',
@@ -34,9 +40,50 @@ export class HomePage implements OnInit {
   public shouldShowFab: boolean = false;
   @ViewChild(IonContent) content: IonContent;
 
-  constructor(private homeService: HomeService, private router: Router, public modalController: ModalController, private authService : AuthService, private notificationService : NotificationService) { }
+  constructor(private homeService: HomeService, private router: Router, public modalController: ModalController, private authService : AuthService, private notificationService : NotificationService) {
+    
+   }
 
   ngOnInit() {
+    // Request permission to use push notifications
+    // iOS will prompt user and return if they granted permission or not
+    // Android will just grant without prompting
+    PushNotifications.requestPermissions().then(async result => {
+      try {
+        debugger;
+      if (result.receive === 'granted') {
+        // Register with Apple / Google to receive push via APNS/FCM
+        await PushNotifications.register();
+      } else {
+        // Show some error
+      }
+    }catch(exception){
+        console.log(exception);
+    }
+    });
+
+    PushNotifications.addListener('registration', (token: Token) => {
+      this.homeService.editDeviceToken(token.value);
+      alert('Push registration success, token: ' + token.value);
+    });
+
+    PushNotifications.addListener('registrationError', (error: any) => {
+      alert('Error on registration: ' + JSON.stringify(error));
+    });
+
+    PushNotifications.addListener(
+      'pushNotificationReceived',
+      (notification: PushNotificationSchema) => {
+        alert('Push received: ' + JSON.stringify(notification));
+      },
+    );
+
+    PushNotifications.addListener(
+      'pushNotificationActionPerformed',
+      (notification: ActionPerformed) => {
+        alert('Push action performed: ' + JSON.stringify(notification));
+      },
+    );
   }
 
   ionViewWillEnter() {

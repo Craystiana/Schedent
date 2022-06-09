@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>dotnet-Schedent.WorkerService-006804D3-B7C1-4578-A58F-D7BAB85EF32F</UserSecretsId>
   </PropertyGroup>
 

@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "compute.appService1": {
+      "group": "connections",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Web/sites/schedent",
+      "type": "compute.appService.windows"
+    },
+    "appInsights1": {
+      "type": "appInsights.sdk"
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "820979725763",
+    "project_id": "schedent-sch3d3n1",
+    "storage_bucket": "schedent-sch3d3n1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:820979725763:android:1a3d9d113c1a833f11f976",
+        "android_client_info": {
+          "package_name": "io.ionic.schedent"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "820979725763-o5ji96gemsac0d0hlg6dij6o2ro6aut3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALu1StxTZefvVk6TZs0tnx0GOx7Wurs7w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "820979725763-o5ji96gemsac0d0hlg6dij6o2ro6aut3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

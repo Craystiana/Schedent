@@ -105,5 +105,14 @@ namespace Schedent.BusinessLogic.Services
 
             UnitOfWork.SaveChanges();
         }
+
+        public void EditDeviceToken(int userId, string token)
+        {
+            var user = UnitOfWork.UserRepository.Get(userId);
+
+            user.DeviceToken = token;
+
+            UnitOfWork.SaveChanges();
+        }
     }
 }

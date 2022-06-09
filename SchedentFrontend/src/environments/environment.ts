@@ -6,7 +6,7 @@ export const environment = {
   production: false
 };
 
-export const API_URL = 'https://localhost:44389/api';
+export const API_URL = 'https://schedent.azurewebsites.net/api';
 export const LOGIN_URL = '/user/login'; 
 export const REGISTER_URL = '/user/register';
 export const FACULTY_LIST_URL = '/faculty/all';
@@ -19,6 +19,7 @@ export const SUBGROUP_SCHEDULE_URL = '/schedule/subgroup?subgroupId=';
 export const NOTIFICATION_LIST_URL = '/notification/all';
 export const USER_DETAILS_URL = '/user/details';
 export const EDIT_PROFILE_URL = '/user/profile';
+export const EDIT_DEVICE_TOKEN = 'user/devicetoken';
 
 /*
  * For easier debugging in development mode, you can import the following file

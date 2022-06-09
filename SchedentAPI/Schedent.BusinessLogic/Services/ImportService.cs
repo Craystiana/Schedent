@@ -1,4 +1,5 @@
-﻿using Google.Apis.Auth.OAuth2;
+﻿using FirebaseAdmin.Messaging;
+using Google.Apis.Auth.OAuth2;
 using Google.Apis.Calendar.v3;
 using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Services;
@@ -16,6 +17,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Schedent.BusinessLogic.Services
 {
@@ -112,7 +114,7 @@ namespace Schedent.BusinessLogic.Services
 
                 UnitOfWork.ScheduleRepository.AddRange(schedules);
 
-                AddNotifications(timeTable);
+                var notifications = AddNotifications(timeTable);
                 AddEvents(timeTable);
                 InactivateSubgroupTimeTable(timeTable.SubgroupId);
             }
@@ -143,19 +145,23 @@ namespace Schedent.BusinessLogic.Services
         public void InactivateSubgroupTimeTable(int subgroupId)
         {
             var timetable = UnitOfWork.TimeTableRepository.SingleOrDefault(t => t.IsActive && t.SubgroupId == subgroupId);
-            timetable.IsActive = false;
+            if (timetable != null)
+            {
+                timetable.IsActive = false;
+            }
         }
 
-        public void AddNotifications(TimeTable newTimeTable)
+        public IEnumerable<Domain.Entities.Notification> AddNotifications(TimeTable newTimeTable)
         {
             var oldTimeTable = UnitOfWork.TimeTableRepository.SingleOrDefault(t => t.IsActive && t.SubgroupId == newTimeTable.SubgroupId);
-            var notifications = new List<Notification>();
+            var notifications = new List<Domain.Entities.Notification>();
 
             if (oldTimeTable == null)
             {
-                notifications.Add(new Notification
+                notifications.Add(new Domain.Entities.Notification
                 {
                     Message = "Your first timetable has been uploaded! Please check your schedule",
+                    SubgroupId = newTimeTable.SubgroupId,
                     IsSent = false,
                     CreatedOn = DateTime.Now,
                 });
@@ -199,6 +205,8 @@ namespace Schedent.BusinessLogic.Services
             }
 
             UnitOfWork.NotificationRepository.AddRange(notifications);
+
+            return notifications;
         }
 
         public void AddEvents(TimeTable timeTable)
@@ -266,6 +274,24 @@ namespace Schedent.BusinessLogic.Services
             };
 
             GetService().Events.Insert(ev, "primary").Execute();
+        }
+
+        public async Task SendFirebaseNotification(IEnumerable<Domain.Entities.Notification> notifications)
+        {
+            foreach (var notification in notifications)
+            {
+                var message = new MulticastMessage
+                {
+                    Tokens = notification.Subgroup.Users.Select(u => u.DeviceToken).ToList(),
+                    Notification = new FirebaseAdmin.Messaging.Notification
+                    {
+                        Title = "Orarul tau a fost modificat",
+                        Body = notification.Message
+                    },
+                };
+
+                var result = await FirebaseMessaging.DefaultInstance.SendMulticastAsync(message);
+            }
         }
     }
 }
