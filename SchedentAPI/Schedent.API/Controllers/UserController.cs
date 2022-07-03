@@ -98,8 +98,8 @@ namespace Schedent.API.Controllers
         }
 
         [HttpPut]
-        [Route("DeviceToken")]
-        public IActionResult DeviceToken([FromBody] string token)
+        [Route("DeviceToken/{token}")]
+        public IActionResult DeviceToken(string token)
         {
             try
             {

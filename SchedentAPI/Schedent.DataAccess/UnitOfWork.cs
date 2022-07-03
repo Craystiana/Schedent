@@ -24,7 +24,7 @@ namespace Schedent.DataAccess
         private IRepository<TimeTable> _timeTableRepository;
         private IRepository<DocumentTimeTable> _documentTimeTableRepository;
         private IRepository<ScheduleType> _scheduleTypeRepository;
-        private IRepository<Notification> _notificationRepository;
+        private INotificationRepository _notificationRepository;
         private IScheduleRepository _scheduleRepository;
         private IUserRepository _userRepository;
 
@@ -47,7 +47,7 @@ namespace Schedent.DataAccess
         public IRepository<TimeTable> TimeTableRepository => _timeTableRepository ??= new Repository<TimeTable>(_context);
         public IRepository<DocumentTimeTable> DocumentTimeTableRepository => _documentTimeTableRepository ??= new Repository<DocumentTimeTable>(_context);
         public IRepository<ScheduleType> ScheduleTypeRepository => _scheduleTypeRepository ??= new Repository<ScheduleType>(_context);
-        public IRepository<Notification> NotificationRepository => _notificationRepository ??= new Repository<Notification>(_context);
+        public INotificationRepository NotificationRepository => _notificationRepository ??= new NotificationRepository(_context);
         public IScheduleRepository ScheduleRepository => _scheduleRepository ??= new ScheduleRepository(_context);
         public IUserRepository UserRepository => _userRepository ??= new UserRepository(_context);
 

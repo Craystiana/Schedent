@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Adauga Orar</ion-title>
+    <ion-title>Adaugă Orar</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -14,7 +14,7 @@
             <ion-input type="file" ngModel name="file" (change)="onDocumentUpload($event.target.files)"></ion-input>
           </ion-item>
           <ion-button type="submit" [disabled]="!addDocumentForm.valid || isDocumentLoaded === false" expand="block">
-            {{isLoading? "": 'Save'}}
+            {{isLoading? "": 'Salvează'}}
           </ion-button>
         </ion-col>
       </ion-row>

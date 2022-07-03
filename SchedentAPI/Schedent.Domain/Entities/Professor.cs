@@ -16,5 +16,7 @@ namespace Schedent.Domain.Entities
 
         public virtual Faculty Faculty { get; set; }
         public virtual ICollection<Schedule> Schedules { get; set; }
+        public virtual ICollection<Notification> Notifications { get; set; }
+        public virtual User User { get; set; }
     }
 }

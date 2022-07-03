@@ -77,7 +77,7 @@ export class RegisterPage implements OnInit {
         if (data == true) {
           this.router.navigateByUrl('/auth');
           this.toastCtrl.create({
-            message: 'Register succesful. Please log in.',
+            message: 'Înregistrare reușită. Conectează-te.',
             duration: 5000,
             position: 'bottom',
             color: 'success',
@@ -86,7 +86,7 @@ export class RegisterPage implements OnInit {
         }
         else {
           this.toastCtrl.create({
-            message: 'Register failed',
+            message: 'Înregistrare eșuată',
             duration: 5000,
             position: 'bottom',
             color: 'danger',
@@ -97,7 +97,7 @@ export class RegisterPage implements OnInit {
       },
       error => {
         this.toastCtrl.create({
-          message: 'Register failed',
+          message: 'Înregistrare eșuată',
           duration: 5000,
           position: 'bottom',
           color: 'danger',

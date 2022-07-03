@@ -33,7 +33,7 @@ export class DocumentUploadModalPage implements OnInit {
       data => {
         if (data === true) {
           this.toastCtrl.create({
-            message: 'Orar adaugat cu success.',
+            message: 'Orar adăugat cu succes.',
             duration: 5000,
             position: 'bottom',
             color: 'success',
@@ -43,7 +43,7 @@ export class DocumentUploadModalPage implements OnInit {
         }
         else {
           this.toastCtrl.create({
-            message: 'Eroare. Va rugam reincercati.',
+            message: 'Eroare. Vă rugăm reîncercați.',
             duration: 5000,
             position: 'bottom',
             color: 'danger',
@@ -54,7 +54,7 @@ export class DocumentUploadModalPage implements OnInit {
       },
       error => {
         this.toastCtrl.create({
-          message: 'Eroare. Va rugam reincercati.',
+          message: 'Eroare. Vă rugăm reîncercați.',
           duration: 5000,
           position: 'bottom',
           color: 'danger',

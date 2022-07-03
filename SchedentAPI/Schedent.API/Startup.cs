@@ -75,6 +75,7 @@ namespace Schedent.API
             services.AddScoped<IRepository<Professor>, Repository<Professor>>();
             services.AddScoped<IRepository<ScheduleType>, Repository<ScheduleType>>();
             services.AddScoped<IScheduleRepository, ScheduleRepository>();
+            services.AddScoped<INotificationRepository, NotificationRepository>();
 
             // Services
             services.AddScoped<UserService>();

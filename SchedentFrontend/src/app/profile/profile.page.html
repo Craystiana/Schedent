@@ -1,5 +1,8 @@
 <ion-header>
   <ion-toolbar>
+    <ion-button slot="end" shape="round" title="Logout" (click)="onLogout()">
+      <ion-icon name="log-out"></ion-icon> Deconectare
+    </ion-button>
     <ion-title>Profil</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -9,57 +12,59 @@
     <ion-grid *ngIf="this.profile!==undefined" style="height: inherit;">
       <ion-row class="ion-align-items-center" style="height: 100%;">
         <ion-col offset-sm="3" size-sm="6">
-          <ion-card>
+          <ion-card color="admintab">
             <ion-card-header class="ion-text-center">
               <ion-card-title>
-                <ion-icon name="flash-sharp" color="warning"></ion-icon>
-                  Detalii Profil
-                <ion-icon name="flash-sharp" color="warning"></ion-icon>
+                <ion-icon name="school-outline" color="primary"></ion-icon>
+                <ion-chip button>
+                  <ion-label>{{this.authService.currentUserName}}</ion-label>
+                </ion-chip>
+                <ion-icon name="school-outline" color="primary"></ion-icon>
               </ion-card-title>
             </ion-card-header>    
 
             <ion-card-content>
-              <ion-item class="item-content">
+              <ion-item class="item-content" color="none">
                 <ion-label position="floating">Prenume</ion-label>
                 <ion-input type="firstName" [ngModel]="this.profile.firstName" name="firstName" required #firstNameCtrl="ngModel"></ion-input>
               </ion-item>
 
-              <ion-item class="item-content">
+              <ion-item class="item-content" color="none">
                 <ion-label position="floating">Nume</ion-label>
                 <ion-input type="lastName" [ngModel]="this.profile.lastName" name="lastName" required #lastNameCtrl="ngModel"></ion-input>
               </ion-item>
 
-              <ion-item class="item-content">
+              <ion-item class="item-content" color="none">
                 <ion-label position="floating">Email</ion-label>
                 <ion-input type="email" [ngModel]="this.profile.emailAddress" name="emailAddress" required #emailAddressCtrl="ngModel"></ion-input>
               </ion-item>
 
-              <ion-item>
+              <ion-item *ngIf="authService.isStudent()" color="none">
                 <ion-label position="floating">Facultate</ion-label>
-                <ion-select #facultyCtrl (ionChange)="onFacultyChange(facultyCtrl.value)" [(ngModel)]="this.profile.facultyId" name="faculty" mode="ios">
+                <ion-select #facultyCtrl (ionChange)="onFacultyChange(facultyCtrl.value)" [(ngModel)]="profile.facultyId" name="faculty" mode="ios">
                   <ion-select-option *ngFor="let faculty of faculties" [value]="faculty.id">{{faculty.name}}</ion-select-option>
                 </ion-select>
               </ion-item>
 
-              <ion-item>
-                <ion-label position="floating">Sectie</ion-label>
-                <ion-select #sectionCtrl (ionChange)="onSectionChange(sectionCtrl.value)" [(ngModel)]="this.profile.sectionId" name="section" mode="ios">
+              <ion-item *ngIf="authService.isStudent()" color="none">
+                <ion-label position="floating">Secție</ion-label>
+                <ion-select #sectionCtrl (ionChange)="onSectionChange(sectionCtrl.value)" [(ngModel)]="profile.sectionId" name="section" mode="ios">
                   <ion-select-option *ngFor="let section of sections" [value]="section.id">{{section.name}}</ion-select-option></ion-select>
               </ion-item>
 
-              <ion-item>
-                <ion-label position="floating">Grupa</ion-label>
-                <ion-select #groupCtrl (ionChange)="onGroupChange(groupCtrl.value)" [(ngModel)]="this.profile.groupId" name="group" mode="ios">
+              <ion-item *ngIf="authService.isStudent()" color="none">
+                <ion-label position="floating">Grupă</ion-label>
+                <ion-select #groupCtrl (ionChange)="onGroupChange(groupCtrl.value)" [(ngModel)]="profile.groupId" name="group" mode="ios">
                   <ion-select-option *ngFor="let group of groups" [value]="group.id">{{group.name}}</ion-select-option></ion-select>
               </ion-item>
 
-              <ion-item>
-                <ion-label position="floating">Subgrupa</ion-label>
-                <ion-select #subgroupCtrl (ionChange)="onSubgroupChange(subgroupCtrl.value)" [(ngModel)]="this.profile.subgroupId" name="subgroup" mode="ios">
+              <ion-item *ngIf="authService.isStudent()" color="none">
+                <ion-label position="floating">Subgrupă</ion-label>
+                <ion-select #subgroupCtrl (ionChange)="onSubgroupChange(subgroupCtrl.value)" [(ngModel)]="profile.subgroupId" name="subgroup" mode="ios">
                   <ion-select-option *ngFor="let subgroup of subgroups" [value]="subgroup.id">{{subgroup.name}}</ion-select-option></ion-select>
               </ion-item>
 
-              <ion-button type="submit" [disabled]="!profileForm.valid" expand="block">{{isLoading? "": "Edit"}}
+              <ion-button type="submit" [disabled]="!profileForm.valid" expand="block">{{isLoading? "": "Editează"}}
                 <ion-spinner *ngIf="isLoading"></ion-spinner>
               </ion-button>
             </ion-card-content>

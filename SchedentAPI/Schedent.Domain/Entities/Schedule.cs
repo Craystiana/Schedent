@@ -31,6 +31,8 @@ namespace Schedent.Domain.Entities
         [Required]
         public string StartsAt { get; set; }
 
+        public string EventId { get; set; }
+
         [Required]
         public DateTime CreatedOn { get; set; }
 

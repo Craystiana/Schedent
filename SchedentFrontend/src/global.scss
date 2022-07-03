@@ -29,3 +29,12 @@ ion-toolbar {
     --background: var(--ion-color-primary);
     --color: var(--ion-color-primary-contrast);
 }
+
+.alert-radio-label, .sc-ion-alert-ios {
+    white-space: normal !important;
+}
+
+ion-select::part(text) {
+    white-space: normal !important;
+    transform: none !important;
+}

@@ -26,7 +26,7 @@ namespace Schedent.WorkerService
                 {
                     _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                     await Task.Delay(1000, stoppingToken);
-                    _importService.ImportTimeTableAsync();
+                    await _importService.ImportTimeTableAsync();
                 }
             } catch (Exception ex)
             {

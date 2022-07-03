@@ -1,3 +1,5 @@
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,6 +12,8 @@ using Schedent.DataAccess.Repositories;
 using Schedent.Domain.Entities;
 using Schedent.Domain.Interfaces;
 using Schedent.Domain.Interfaces.Repositories;
+using System;
+using System.IO;
 
 namespace Schedent.WorkerService
 {
@@ -55,6 +59,11 @@ namespace Schedent.WorkerService
                     services.Configure<FirebaseSettings>(hostContext.Configuration.GetSection(nameof(FirebaseSettings)));
 
                     ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+                    FirebaseApp.Create(new AppOptions()
+                    {
+                        Credential = GoogleCredential.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "firebase_settings.json")),
+                    });
                 });
     }
 }

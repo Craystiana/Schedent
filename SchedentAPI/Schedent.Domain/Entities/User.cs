@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Schedent.Domain.Entities
@@ -31,6 +32,10 @@ namespace Schedent.Domain.Entities
         public string Salt { get; set; }
 
         public string DeviceToken { get; set; }
+
+        [Required]
+        [DefaultValue(false)]
+        public bool EventsSent { get; set; }
 
         [Required]
         public DateTime CreatedOn { get; set; }

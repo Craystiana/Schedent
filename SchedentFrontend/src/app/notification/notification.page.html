@@ -1,19 +1,25 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Notifications</ion-title>
+    <ion-title>Notificări</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <ion-card style="height: -webkit-fill-available;" *ngIf="notifications == undefined || notifications.length == 0" class="ion-text-center" color="admintab">
+    <div style="display: flex; align-items: center;justify-content: center;">
+      <img src="../assets/icon/icon.png" />
+    </div>
+    <ion-card-title text-wrap>Nu aveți notificări!</ion-card-title>
+  </ion-card>
   <ion-grid mode="ios">
-    <ion-card *ngFor="let notification of notifications">
+    <ion-card *ngFor="let notification of notifications" color="admintab">
       <ion-card-header mode="ios" color="none">
         <ion-card-subtitle mode="ios">{{notification.createdOn}}</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content mode="ios">
         <ion-item lines="none" mode="ios" color="none">
           <ion-icon name="notifications-outline" slot="start" color="warning"></ion-icon>
-          <ion-label>{{notification.message}}</ion-label>
+          <ion-label class="ion-text-wrap">{{notification.message}}</ion-label>
         </ion-item>
       </ion-card-content>
     </ion-card>

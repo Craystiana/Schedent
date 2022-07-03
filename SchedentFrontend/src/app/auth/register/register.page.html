@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button>daw</ion-back-button>
     </ion-buttons>
-    <ion-title>Register</ion-title>
+    <ion-title>Înregistrare</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -13,80 +13,80 @@
     <ion-grid style="height: inherit;">
       <ion-row class="ion-align-items-center" style="height: 100%;">
         <ion-col offset-sm="3" size-sm="6">
-          <ion-card>
+          <ion-card color="admintab">
             <ion-card-header class="ion-text-center">
               <ion-card-title>
-                <ion-icon name="flash-sharp" color="warning"></ion-icon>
-                Create a Schedent Account
-                <ion-icon name="flash-sharp" color="warning"></ion-icon>
+                <ion-icon name="school-outline" color="primary"></ion-icon>
+                Înregistrează-te
+                <ion-icon name="school-outline" color="primary"></ion-icon>
               </ion-card-title>
             </ion-card-header>
 
             <ion-card-content>
-              <ion-item class="item-content">
-                <ion-label position="floating">First Name</ion-label>
+              <ion-item class="item-content" color="none">
+                <ion-label position="floating">Prenume</ion-label>
                 <ion-input type="firstName" ngModel name="firstName" required #firstNameCtrl="ngModel"></ion-input>
               </ion-item>
-              <ion-item *ngIf="firstNameCtrl.touched && !firstNameCtrl.valid" lines="none">
-                <ion-label color="danger">Please input your first name!</ion-label>
+              <ion-item *ngIf="firstNameCtrl.touched && !firstNameCtrl.valid" lines="none" color="none">
+                <ion-label text-wrap color="danger">Prenume invalid!</ion-label>
               </ion-item>
 
-              <ion-item class="item-content">
-                <ion-label position="floating">Last Name</ion-label>
+              <ion-item class="item-content" color="none">
+                <ion-label position="floating">Nume</ion-label>
                 <ion-input type="lastName" ngModel name="lastName" required #lastNameCtrl="ngModel"></ion-input>
               </ion-item>
-              <ion-item *ngIf="lastNameCtrl.touched && !lastNameCtrl.valid" lines="none">
-                <ion-label color="danger">Please input your last name!</ion-label>
+              <ion-item *ngIf="lastNameCtrl.touched && !lastNameCtrl.valid" lines="none" color="none">
+                <ion-label text-wrap color="danger">Nume invalid!</ion-label>
               </ion-item>
 
-              <ion-item class="item-content">
-                <ion-label position="floating">Email Address</ion-label>
-                <ion-input type="email" ngModel name="email" required #emailAddressCtrl="ngModel" pattern="([a-z]+)([\.])([a-z]+)(?:([\.])([a-z])([0-9])([a-z]))?(\@)(student|edu)([\.])(ucv)([\.])(ro)"></ion-input>
+              <ion-item class="item-content" color="none">
+                <ion-label position="floating">Adresă de email</ion-label>
+                <ion-input type="email" ngModel name="email" required #emailAddressCtrl="ngModel" pattern="([a-z]+)([\.])([a-z]+)(?:([\.])([a-z])([0-9])([a-z]))?(\@)(student|edu|gmail)([\.])(ucv|com)(?:([\.])(ro))?"></ion-input>
               </ion-item>
-              <ion-item *ngIf="emailAddressCtrl.touched && !emailAddressCtrl.valid" lines="none">
-                <ion-label color="danger">Please provide a valid email address!</ion-label>
+              <ion-item *ngIf="emailAddressCtrl.touched && !emailAddressCtrl.valid" lines="none" color="none">
+                <ion-label text-wrap color="danger">Adresa de email invalidă!</ion-label>
               </ion-item>
 
-              <ion-item>
-                <ion-label position="floating">Faculty</ion-label>
+              <ion-item color="none">
+                <ion-label position="floating">Facultate</ion-label>
                 <ion-select #facultyCtrl (ionChange)="onFacultyChange(facultyCtrl.value)" name="faculty" mode="ios">
                   <ion-select-option *ngFor="let faculty of faculties" [value]="faculty.id">{{faculty.name}}</ion-select-option></ion-select>
               </ion-item>
 
-              <ion-item>
-                <ion-label position="floating">Section</ion-label>
+              <ion-item color="none">
+                <ion-label position="floating">Secție</ion-label>
                 <ion-select #sectionCtrl (ionChange)="onSectionChange(sectionCtrl.value)" name="section" mode="ios">
                   <ion-select-option *ngFor="let section of sections" [value]="section.id">{{section.name}}</ion-select-option></ion-select>
               </ion-item>
 
-              <ion-item>
-                <ion-label position="floating">Group</ion-label>
+              <ion-item color="none">
+                <ion-label position="floating">Grupă</ion-label>
                 <ion-select #groupCtrl (ionChange)="onGroupChange(groupCtrl.value)" name="group" mode="ios">
                   <ion-select-option *ngFor="let group of groups" [value]="group.id">{{group.name}}</ion-select-option></ion-select>
               </ion-item>
 
-              <ion-item>
-                <ion-label position="floating">Subgroup</ion-label>
+              <ion-item color="none">
+                <ion-label position="floating">Subgrupă</ion-label>
                 <ion-select #subgroupCtrl (ionChange)="onSubgroupChange(subgroupCtrl.value)" name="subgroup" mode="ios">
                   <ion-select-option *ngFor="let subgroup of subgroups" [value]="subgroup.id">{{subgroup.name}}</ion-select-option></ion-select>
               </ion-item>
 
-              <ion-item>
-                <ion-label position="floating">Password</ion-label>
+              <ion-item color="none">
+                <ion-label position="floating">Parolă</ion-label>
                 <ion-input type="password" ngModel name="password" required #passCtrl="ngModel" clearOnEdit="false">
                 </ion-input>
               </ion-item>
-              <ion-item *ngIf="passCtrl.touched && !passCtrl.valid" lines="none">
-                <ion-label color="danger">Please input your password!</ion-label>
+              <ion-item *ngIf="passCtrl.touched && !passCtrl.valid" lines="none" color="none">
+                <ion-label text-wrap color="danger">Parolă invalidă!</ion-label>
               </ion-item>
 
-              <ion-button type="submit" [disabled]="!registerForm.valid" expand="block">{{isLoading? "": "Register"}}
+              <ion-button type="submit" [disabled]="!registerForm.valid" expand="block">{{isLoading? "": "Înregistrare"}}
                 <ion-spinner *ngIf="isLoading"></ion-spinner>
               </ion-button>
 
-              <ion-item class="ion-text-center" [routerLink]="['/auth']" lines="none">
-                <ion-label color="secondary">
-                  Have an account? Login now!
+              <ion-item class="ion-text-center" [routerLink]="['/auth']" lines="none" color="none">
+                <ion-label color="primary">
+                  Deții un cont? Conectează-te!
                 </ion-label>
               </ion-item>
             </ion-card-content>

@@ -19,14 +19,12 @@ namespace Schedent.API.Controllers
         private readonly DocumentService _documentService;
         private readonly ILogger<DocumentController> _logger;
         private readonly IHubContext<NotificationHub> _notificationHub;
-        private readonly UserService _userService;
 
-        public DocumentController(DocumentService documentService, ILogger<DocumentController> logger, IHubContext<NotificationHub> notificationHub, UserService userService)
+        public DocumentController(DocumentService documentService, ILogger<DocumentController> logger, IHubContext<NotificationHub> notificationHub)
         {
             _documentService = documentService;
             _logger = logger;
             _notificationHub = notificationHub;
-            _userService = userService;
         }
 
         [HttpPost]

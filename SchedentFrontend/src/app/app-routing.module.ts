@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './auth/auth.guard';
 
 const routes: Routes = [
   {
@@ -13,19 +14,23 @@ const routes: Routes = [
   },
   {
     path: 'home',
-    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
+    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule),
+    canLoad: [AuthGuard]
   },
   {
     path: 'document-upload-modal',
-    loadChildren: () => import('./modals/document-upload-modal/document-upload-modal.module').then( m => m.DocumentUploadModalPageModule)
+    loadChildren: () => import('./modals/document-upload-modal/document-upload-modal.module').then( m => m.DocumentUploadModalPageModule),
+    canLoad: [AuthGuard]
   },
   {
     path: 'notification',
-    loadChildren: () => import('./notification/notification.module').then( m => m.NotificationPageModule)
+    loadChildren: () => import('./notification/notification.module').then( m => m.NotificationPageModule),
+    canLoad: [AuthGuard]
   },
   {
     path: 'profile',
-    loadChildren: () => import('./profile/profile.module').then( m => m.ProfilePageModule)
+    loadChildren: () => import('./profile/profile.module').then( m => m.ProfilePageModule),
+    canLoad: [AuthGuard]
   }
 ];
 

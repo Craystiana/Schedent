@@ -29,7 +29,7 @@ namespace Schedent.BusinessLogic.Services
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     SubgroupId = model.Subgroup,
-                    ProfessorId = UnitOfWork.ProfessorRepository.Find(p => p.Name == model.FirstName + " " + model.LastName).FirstOrDefault().ProfessorId,
+                    ProfessorId = UnitOfWork.ProfessorRepository.Find(p => p.Name == model.FirstName + " " + model.LastName).FirstOrDefault()?.ProfessorId,
                     UserRoleId = model.Subgroup != null ? (int)UserRoleType.Student : (int)UserRoleType.Professor,
                     Salt = salt,
                     PasswordHash = CreatePasswordHash(model.Password, salt)
@@ -87,10 +87,10 @@ namespace Schedent.BusinessLogic.Services
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 EmailAddress = user.Email,
-                FacultyId = user.Subgroup.Group.Section.FacultyId,
-                SectionId = user.Subgroup.Group.SectionId,
-                GroupId = user.Subgroup.GroupId,
-                SubgroupId = (int)user.SubgroupId,
+                FacultyId = user.Subgroup?.Group.Section.FacultyId,
+                SectionId = user.Subgroup?.Group.SectionId,
+                GroupId = user.Subgroup?.GroupId,
+                SubgroupId = user.SubgroupId,
             };
         }
 

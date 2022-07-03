@@ -1,0 +1,9 @@
+{
+  "access_token": "ya29.A0ARrdaM-A_quT_U5p6DegX9q9we4oeqHjqsiE9k7MfamTdXJfMg3hzAbpo4J9PTfla2nChtHJbFfeCiqcFon3mWlQD9UwXzLO-FrBckN7lQCw1TOj1Jigf9Pc05FsL2Gl4OGe5ZeC-G-68aNhZ9QbN7U1g01NGgYUNnWUtBVEFTQVRBU0ZRRl91NjFWMkZWRjVqbzg0bGIxTGFWa3A3NFFfdw0165",
+  "token_type": "Bearer",
+  "expires_in": 3599,
+  "refresh_token": "1//09NNHbLor33OFCgYIARAAGAkSNwF-L9IrSUCr98tXcEE2cemO6P05yxszSP5D1Z5pM2M5DjvBI9N_CLj-kY8wZH7F4k17Q64hUKQ",
+  "scope": "https://www.googleapis.com/auth/calendar",
+  "Issued": "2022-07-03T16:00:07.429+03:00",
+  "IssuedUtc": "2022-07-03T13:00:07.429Z"
+}

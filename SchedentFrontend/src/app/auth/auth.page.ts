@@ -46,7 +46,7 @@ export class AuthPage implements OnInit {
         },
         error => {
           this.toastCtrl.create({
-            message: 'Incorrect email or password',
+            message: 'Email sau parolă greșită',
             duration: 5000,
             position: 'bottom',
             color: 'danger',

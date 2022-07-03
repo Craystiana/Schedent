@@ -1,16 +1,17 @@
 ﻿using Schedent.Domain.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Schedent.BusinessLogic.Factories
 {
     public class NotificationFactory
     {
-        private readonly IDictionary<string, Func<Schedule, Schedule, Notification>> _dict;
+        private readonly IDictionary<string, Func<Schedule, Schedule, IEnumerable<Notification>>> _dict;
 
         public NotificationFactory()
         {
-            _dict = new Dictionary<string, Func<Schedule, Schedule, Notification>>
+            _dict = new Dictionary<string, Func<Schedule, Schedule, IEnumerable<Notification>>>
             {
                 { nameof(Schedule.Day), GetDayChangeNotification },
                 { nameof(Schedule.Week), GetWeekChangeNotification },
@@ -20,7 +21,7 @@ namespace Schedent.BusinessLogic.Factories
             };
         }
 
-        public Notification GetNotification(string property, Schedule oldSchedule, Schedule newSchedule)
+        public IEnumerable<Notification> GetNotification(string property, Schedule oldSchedule, Schedule newSchedule)
         {
             if (_dict.ContainsKey(property))
             {
@@ -28,78 +29,128 @@ namespace Schedent.BusinessLogic.Factories
             } 
             else
             {
-                return null;
+                return Enumerable.Empty<Notification>();
             }
         }
 
-        private Notification GetDayChangeNotification(Schedule oldSchedule, Schedule newSchedule)
+        private IEnumerable<Notification> GetDayChangeNotification(Schedule oldSchedule, Schedule newSchedule)
         {
-            return new Notification
+            return new List<Notification>()
             {
-                SubgroupId = newSchedule.TimeTable.SubgroupId,
-                Message = $"{newSchedule.Subject.Name} moved from {oldSchedule.Day} to {newSchedule.Day}",
-                IsSent = false,
-                CreatedOn = DateTime.Now,
+                new Notification 
+                {
+                    SubgroupId = newSchedule.TimeTable.SubgroupId,
+                    Message = $"{newSchedule.ScheduleType.Name}ul {newSchedule.Subject.Name} s-a mutat din ziua de {oldSchedule.Day} în ziua de {newSchedule.Day}",
+                    IsSent = false,
+                    CreatedOn = DateTime.Now
+                },
+                new Notification
+                {
+                    ProfessorId = newSchedule.ProfessorId,
+                    Message = $"{newSchedule.ScheduleType.Name}ul {newSchedule.Subject.Name} s-a mutat din ziua de {oldSchedule.Day} în ziua de {newSchedule.Day}",
+                    IsSent = false,
+                    CreatedOn = DateTime.Now
+                }
             };
         }
 
-        private Notification GetWeekChangeNotification(Schedule oldSchedule, Schedule newSchedule)
+        private IEnumerable<Notification> GetWeekChangeNotification(Schedule oldSchedule, Schedule newSchedule)
         {
             static string getWeek(int week)
             {
                 if (week == 1)
                 {
-                    return "odd";
+                    return "impară";
                 }
                 else if (week == 2)
                 {
-                    return "even";
+                    return "pară";
                 }
                 else
                 {
-                    return "every";
+                    return "recurenta";
                 }
             }
 
-            return new Notification
+            return new List<Notification>()
             {
-                SubgroupId = newSchedule.TimeTable.SubgroupId,
-                Message = $"{newSchedule.Subject.Name} moved from {getWeek(oldSchedule.Week)} to {getWeek(newSchedule.Week)}",
-                IsSent = false,
-                CreatedOn = DateTime.Now,
+                new Notification
+                {
+                    SubgroupId = newSchedule.TimeTable.SubgroupId,
+                    Message = $"{newSchedule.ScheduleType.Name}ul {newSchedule.Subject.Name} s-a mutat din săptămână {getWeek(oldSchedule.Week)} în săptămână {getWeek(newSchedule.Week)}",
+                    IsSent = false,
+                    CreatedOn = DateTime.Now,
+                },
+                new Notification
+                {
+                    ProfessorId = newSchedule.ProfessorId,
+                    Message = $"{newSchedule.ScheduleType.Name}ul {newSchedule.Subject.Name} s-a mutat din săptămână {getWeek(oldSchedule.Week)} în săptămână {getWeek(newSchedule.Week)}",
+                    IsSent = false,
+                    CreatedOn = DateTime.Now,
+                }
             };
         }
 
-        private Notification GetProfessorChangeNotification(Schedule oldSchedule, Schedule newSchedule)
+        private IEnumerable<Notification> GetProfessorChangeNotification(Schedule oldSchedule, Schedule newSchedule)
         {
-            return new Notification
+            return new List<Notification>()
             {
-                SubgroupId = newSchedule.TimeTable.SubgroupId,
-                Message = $"For {newSchedule.Subject.Name} the professor changed from {oldSchedule.Professor.Name} to {newSchedule.Professor.Name}",
-                IsSent = false,
-                CreatedOn = DateTime.Now,
+                new Notification 
+                {
+                    SubgroupId = newSchedule.TimeTable.SubgroupId,
+                    Message = $"Pentru {newSchedule.ScheduleType.Name}ul {newSchedule.Subject.Name} profesorul {oldSchedule.Professor.Name} a fost schimbat cu profesorul {newSchedule.Professor.Name}",
+                    IsSent = false,
+                    CreatedOn = DateTime.Now
+                },
+                new Notification 
+                {
+                    ProfessorId = newSchedule.ProfessorId,
+                    Message = $"Pentru {newSchedule.ScheduleType.Name}ul {newSchedule.Subject.Name} profesorul {oldSchedule.Professor.Name} a fost schimbat cu profesorul {newSchedule.Professor.Name}",
+                    IsSent = false,
+                    CreatedOn = DateTime.Now
+                }
+
             };
         }
 
-        private Notification GetDurationChangeNotification(Schedule oldSchedule, Schedule newSchedule)
+        private IEnumerable<Notification> GetDurationChangeNotification(Schedule oldSchedule, Schedule newSchedule)
         {
-            return new Notification
+            return new List<Notification>()
             {
-                SubgroupId = newSchedule.TimeTable.SubgroupId,
-                Message = $"{newSchedule.Subject.Name} now has {newSchedule.Duration}h instead of {oldSchedule.Duration}h",
-                IsSent = false,
-                CreatedOn = DateTime.Now,
+                new Notification
+                {
+                    SubgroupId = newSchedule.TimeTable.SubgroupId,
+                    Message = $"{newSchedule.ScheduleType.Name}ul {newSchedule.Subject.Name} are de acum {newSchedule.Duration}h în loc de {oldSchedule.Duration}h",
+                    IsSent = false,
+                    CreatedOn = DateTime.Now
+                },
+                new Notification{
+                    ProfessorId = newSchedule.ProfessorId,
+                    Message = $"{newSchedule.ScheduleType.Name}ul {newSchedule.Subject.Name} are de acum {newSchedule.Duration}h în loc de {oldSchedule.Duration}h",
+                    IsSent = false,
+                    CreatedOn = DateTime.Now
+                }
             };
         }
 
-        private Notification GetStartsAtChangeNotification(Schedule oldSchedule, Schedule newSchedule)
+        private IEnumerable<Notification> GetStartsAtChangeNotification(Schedule oldSchedule, Schedule newSchedule)
         {
-            return new Notification
+            return new List<Notification>()
             {
-                SubgroupId = newSchedule.TimeTable.SubgroupId,
-                Message = $"{newSchedule.Subject.Name} now starts at {newSchedule.StartsAt} instead of {oldSchedule.StartsAt}",
-                IsSent = false,
-                CreatedOn = DateTime.Now,
+                new Notification
+                {
+                    SubgroupId = newSchedule.TimeTable.SubgroupId,
+                    Message = $"{newSchedule.ScheduleType.Name}ul {newSchedule.Subject.Name} începe de acum la ora {newSchedule.StartsAt} în loc de ora {oldSchedule.StartsAt}",
+                    IsSent = false,
+                    CreatedOn = DateTime.Now
+                },
+                new Notification
+                {
+                    ProfessorId = newSchedule.ProfessorId,
+                    Message = $"{newSchedule.ScheduleType.Name}ul {newSchedule.Subject.Name} începe de acum la ora {newSchedule.StartsAt} în loc de ora {oldSchedule.StartsAt}",
+                    IsSent = false,
+                    CreatedOn = DateTime.Now
+                }
             };
         }
     }

@@ -12,9 +12,10 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthService } from './auth/auth.service';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+import { DocumentUploadModalPage } from './modals/document-upload-modal/document-upload-modal.page';
 
 @NgModule({
-    declarations: [AppComponent],
+    declarations: [AppComponent, DocumentUploadModalPage],
     imports: [
         BrowserModule,
         FormsModule,

@@ -1,12 +1,12 @@
 <ion-header id="header">
   <ion-toolbar>
-    <ion-button slot="end" *ngIf="authService.isAdmin()" (click)="sections.length > 0 ? loadFaculties() : groups.length > 0 ? loadSections(facultyId, facultyName) : subgroups.length > 0 ? loadGroups(sectionId, sectionName) : loadSubgroups(groupId, groupName)">
+    <ion-button slot="start" *ngIf="authService.isAdmin() && (faculties == undefined || faculties.length == 0)" (click)="activeTab == 2 ? loadFaculties() : activeTab == 3 ? loadSections(facultyId, facultyName) : activeTab == 4 ? loadGroups(sectionId, sectionName) : loadSubgroups(groupId, groupName)">
       <ion-icon name="arrow-back"></ion-icon>
     </ion-button>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>{{title}}</ion-title>
+    <ion-title><div class="ion-text-wrap">{{title}}</div></ion-title>
     <ion-button *ngIf="authService.isAdmin()" slot="end" shape="round" title="Orar" (click)="presentModal()">
       <ion-icon name="add-circle-outline"></ion-icon>
     </ion-button>
@@ -14,6 +14,34 @@
 </ion-header>
 
 <ion-content mode="ios" id="content1" [scrollEvents]="true" (ionScroll)="onScroll($event)">
+  <ion-card style="height: -webkit-fill-available;" *ngIf="activeTab == 2 && (!sections || sections.length == 0)" class="ion-text-center" color="admintab">
+    <div style="display: flex; align-items: center;justify-content: center;">
+      <img src="../assets/icon/icon.png" />
+    </div>
+    <ion-card-title text-wrap>Secțiile facultății selectate nu sunt disponibile!</ion-card-title>
+  </ion-card>
+
+  <ion-card style="height: -webkit-fill-available;" *ngIf="activeTab == 3 && (!groups || groups.length == 0)" class="ion-text-center" color="admintab">
+    <div style="display: flex; align-items: center;justify-content: center;">
+      <img src="../assets/icon/icon.png" />
+    </div>
+    <ion-card-title text-wrap>Grupele secției selectate nu sunt disponibile!</ion-card-title>
+  </ion-card>
+
+  <ion-card style="height: -webkit-fill-available;" *ngIf="activeTab == 4 && (!subgroups || subgroups.length == 0)" class="ion-text-center" color="admintab">
+    <div style="display: flex; align-items: center;justify-content: center;">
+      <img src="../assets/icon/icon.png" />
+    </div>
+    <ion-card-title text-wrap>Subgrupele grupei selectate nu sunt disponibile!</ion-card-title>
+  </ion-card>
+
+  <ion-card style="height: -webkit-fill-available;" *ngIf="activeTab == 5 && (!schedules || schedules.length == 0)" class="ion-text-center" color="admintab">
+    <div style="display: flex; align-items: center;justify-content: center;">
+      <img src="../assets/icon/icon.png" />
+    </div>
+    <ion-card-title text-wrap>Acest orar nu este încărcat!</ion-card-title>
+  </ion-card>
+
   <ion-grid *ngIf="schedules && schedules.length > 0">
     <ion-row class="ion-justify-content-center">
       <ion-col class="ion-text-center"><ion-button (click)="scrollTo('Luni')">Lu</ion-button></ion-col>
@@ -24,25 +52,25 @@
     </ion-row>
   </ion-grid>
 
-  <ion-card *ngFor="let faculty of faculties" (click)="loadSections(faculty.id, faculty.name)">
+  <ion-card *ngFor="let faculty of faculties" (click)="loadSections(faculty.id, faculty.name)" color="admintab">
     <ion-card-header mode="ios" class="ion-text-center">
       <ion-card-title>{{faculty.name}}</ion-card-title>
     </ion-card-header>
   </ion-card>
 
-  <ion-card *ngFor="let section of sections" (click)="loadGroups(section.id, section.name)">
+  <ion-card *ngFor="let section of sections" (click)="loadGroups(section.id, section.name)" color="admintab">
     <ion-card-header mode="ios" class="ion-text-center">
       <ion-card-title>{{section.name}}</ion-card-title>
     </ion-card-header>
   </ion-card>
 
-  <ion-card *ngFor="let group of groups" (click)="loadSubgroups(group.id, group.name)">
+  <ion-card *ngFor="let group of groups" (click)="loadSubgroups(group.id, group.name)" color="admintab">
     <ion-card-header mode="ios" class="ion-text-center">
       <ion-card-title>{{group.name}}</ion-card-title>
     </ion-card-header>
   </ion-card>
 
-  <ion-card *ngFor="let subgroup of subgroups" (click)="loadSubgroupSchedules(subgroup.id, subgroup.name)">
+  <ion-card *ngFor="let subgroup of subgroups" (click)="loadSubgroupSchedules(subgroup.id, subgroup.name)" color="admintab">
     <ion-card-header mode="ios" class="ion-text-center">
       <ion-card-title>{{subgroup.name}}</ion-card-title>
     </ion-card-header>

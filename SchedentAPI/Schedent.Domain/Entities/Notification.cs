@@ -8,8 +8,9 @@ namespace Schedent.Domain.Entities
         [Key]
         public int NotificationId { get; set; }
 
-        [Required]
-        public int SubgroupId { get; set; }
+        public int? SubgroupId { get; set; }
+
+        public int? ProfessorId { get; set; }
 
         [Required]
         public string Message { get; set; }
@@ -21,5 +22,7 @@ namespace Schedent.Domain.Entities
         public DateTime CreatedOn { get; set; }
 
         public virtual Subgroup Subgroup { get; set; }
+
+        public virtual Professor Professor { get; set; }
     }
 }

@@ -1,12 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController, IonContent } from '@ionic/angular';
-import { first, take } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
 import { DocumentUploadModalPage } from '../modals/document-upload-modal/document-upload-modal.page';
 import { Generic } from '../models/generic/generic';
 import { ScheduleListModel } from '../models/schedule/scheduleListModel';
-import { NotificationService } from '../services/notification.service';
 import { HomeService } from './home.service';
 import {
   ActionPerformed,
@@ -38,9 +37,10 @@ export class HomePage implements OnInit {
   public subgroupName: string;
   public title: string;
   public shouldShowFab: boolean = false;
+  public activeTab: number;
   @ViewChild(IonContent) content: IonContent;
 
-  constructor(private homeService: HomeService, private router: Router, public modalController: ModalController, private authService : AuthService, private notificationService : NotificationService) {
+  constructor(private homeService: HomeService, private router: Router, public modalController: ModalController, private authService : AuthService) {
     
    }
 
@@ -50,7 +50,6 @@ export class HomePage implements OnInit {
     // Android will just grant without prompting
     PushNotifications.requestPermissions().then(async result => {
       try {
-        debugger;
       if (result.receive === 'granted') {
         // Register with Apple / Google to receive push via APNS/FCM
         await PushNotifications.register();
@@ -63,8 +62,7 @@ export class HomePage implements OnInit {
     });
 
     PushNotifications.addListener('registration', (token: Token) => {
-      this.homeService.editDeviceToken(token.value);
-      alert('Push registration success, token: ' + token.value);
+      this.homeService.editDeviceToken(token.value).pipe(first()).subscribe();
     });
 
     PushNotifications.addListener('registrationError', (error: any) => {
@@ -110,6 +108,7 @@ export class HomePage implements OnInit {
         this.schedules = data;
         this.faculties = [];
         this.title = 'Orar';
+        this.activeTab = 5;
       }
     );
   }
@@ -120,58 +119,63 @@ export class HomePage implements OnInit {
         this.faculties = data;
         this.schedules = [];
         this.sections = [];
-        this.title = 'Facultati';
+        this.title = 'Facultăți';
+        this.activeTab = 1;
       }
     );
   }
 
   loadSections(facultyId, facultyName) {
+    this.facultyId = facultyId;
+    this.facultyName = facultyName;
     this.authService.getSectionList(facultyId).pipe(first()).subscribe(
       data => {
         this.sections = data;
         this.faculties = [];
         this.groups = [];
-        this.facultyId = facultyId;
-        this.facultyName = facultyName;
         this.title = this.facultyName;
+        this.activeTab = 2;
       }
     )
   }
 
   loadGroups(sectionId, sectionName) {
+    this.sectionId = sectionId;
+    this.sectionName = sectionName;
     this.authService.getGroupList(sectionId).pipe(first()).subscribe(
       data => {
         this.groups = data;
         this.sections = [];
         this.subgroups = [];
-        this.sectionId = sectionId;
-        this.sectionName = sectionName;
         this.title = this.sectionName;
+        this.activeTab = 3;
       }
     )
   }
 
   loadSubgroups(groupId, groupName) {
+    this.groupId = groupId;
+    this.groupName = groupName;
     this.authService.getSubgroupList(groupId).pipe(first()).subscribe(
       data => {
         this.subgroups = data;
         this.groups = [];
         this.schedules = [];
-        this.groupId = groupId;
-        this.groupName = groupName;
         this.title = this.groupName;
+        this.activeTab = 4;
       }
     )
   }
 
   loadSubgroupSchedules(subgroupId, subgroupName) {
+    this.subgroupId = subgroupId;
+    this.subgroupName = subgroupName;
     this.homeService.getSubgroupSchedule(subgroupId).pipe(first()).subscribe(
       data => {
         this.schedules = data;
         this.subgroups = [];
-        this.subgroupId = subgroupId;
-        this.subgroupName = subgroupName;
         this.title = this.groupName + this.subgroupName;
+        this.activeTab = 5;
       }
     )
   }

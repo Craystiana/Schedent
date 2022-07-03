@@ -24,23 +24,41 @@ export class ProfilePage implements OnInit {
 
   constructor(private profileService : ProfileService, private authService : AuthService, private router : Router, private toastCtrl : ToastController) {  }
 
-  ngOnInit() { }
-
-  ionViewWillEnter() {
+  ngOnInit() {
     this.loadFaculties();
     this.loadUserDetails();
   }
 
   loadUserDetails() {
-    this.profileService.getUserDetails().pipe(first()).subscribe(
-      data => {
-        this.profile = data;
-        this.onFacultyChange(this.profile.facultyId);
-        this.onSectionChange(this.profile.sectionId);
-        this.onGroupChange(this.profile.groupId);
-        this.onSubgroupChange(this.profile.subgroupId);
-      }
-    );
+    if (!this.authService.isAdmin() && !this.authService.isProfessor()) {
+      this.profileService.getUserDetails().pipe(first()).subscribe(
+        data => {
+          this.authService.getSectionList(data.facultyId).pipe(take(1)).subscribe(
+            data1 => {
+              this.sections = data1;
+              this.authService.getGroupList(data.sectionId).pipe(take(1)).subscribe(
+                data2 => {
+                  this.groups = data2;
+                  this.authService.getSubgroupList(data.groupId).pipe(take(1)).subscribe(
+                    data3 => {
+                      this.subgroups = data3;
+                      this.subgroupId = data.subgroupId;
+                      this.profile = data;
+                    }
+                  );
+                }
+              );
+            }
+          );
+        }
+      );
+    } else {
+      this.profileService.getUserDetails().pipe(first()).subscribe(
+        data => {
+          this.profile = data;
+        }
+      );
+    }
   }
 
   loadFaculties() {
@@ -55,6 +73,9 @@ export class ProfilePage implements OnInit {
     this.authService.getSectionList(facultyId).pipe(take(1)).subscribe(
       data => {
         this.sections = data;
+        this.profile.sectionId = null;
+        this.profile.groupId = null;
+        this.profile.subgroupId = null;
       }
     );
   }
@@ -63,6 +84,8 @@ export class ProfilePage implements OnInit {
     this.authService.getGroupList(sectionId).pipe(take(1)).subscribe(
       data => {
         this.groups = data;
+        this.profile.groupId = null;
+        this.profile.subgroupId = null;
       }
     );
   }
@@ -71,6 +94,7 @@ export class ProfilePage implements OnInit {
     this.authService.getSubgroupList(groupId).pipe(take(1)).subscribe(
       data => {
         this.subgroups = data;
+        this.profile.subgroupId = null;
       }
     );
   }
@@ -95,7 +119,7 @@ export class ProfilePage implements OnInit {
         if(data==true){
           this.router.navigateByUrl('/auth/profile');
           this.toastCtrl.create({
-            message: 'Profile updated',
+            message: 'Profilul a fost editat cu succes!',
             duration: 5000,
             position: 'bottom',
             color: 'success',
@@ -107,7 +131,7 @@ export class ProfilePage implements OnInit {
       },
       error => {
         this.toastCtrl.create({
-          message: 'Edit failed',
+          message: 'Editarea profilului a eșuat!',
           duration: 5000,
           position: 'bottom',
           color: 'danger',
@@ -117,5 +141,10 @@ export class ProfilePage implements OnInit {
         this.isLoading = false;
       }
     )
+  }
+
+  onLogout(){
+    this.authService.logout();
+    this.router.navigateByUrl('/auth');
   }
 }

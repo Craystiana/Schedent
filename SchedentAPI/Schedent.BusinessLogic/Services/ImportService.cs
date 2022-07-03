@@ -37,9 +37,15 @@ namespace Schedent.BusinessLogic.Services
                                                 .ToList();
         }
 
-        public void ImportTimeTableAsync()
+        public IEnumerable<User> GetUsersWithoutSentEvents()
+        {
+            return UnitOfWork.UserRepository.Find(u => !u.EventsSent).ToList();
+        }
+
+        public async Task ImportTimeTableAsync()
         {
             var documents = GetDocumentsToImport();
+            var users = GetUsersWithoutSentEvents();
 
             foreach (var document in documents)
             {
@@ -85,17 +91,42 @@ namespace Schedent.BusinessLogic.Services
                     }
 
                     ImportTimeTable(importLines, document);
-                } 
-                catch(Exception ex)
+                    var notifications = UnitOfWork.NotificationRepository.GetNotificationsByIds();
+                    await SendFirebaseNotificationsAsync(notifications);
+                }
+                catch (Exception ex)
                 {
                     throw ex;
                 }
+            }
+
+            foreach (var user in users)
+            {
+                var schedules = user.ProfessorId != null ?
+                            UnitOfWork.ScheduleRepository.GetSchedulesForProfessor(user.UserId).ToList() :
+                            UnitOfWork.ScheduleRepository.GetSchedulesForStudent(user.UserId).ToList();
+
+                foreach (var schedule in schedules)
+                {
+                    if (schedule.EventId != null)
+                    {
+                        AddAtendeeToEvent(schedule);
+                    }
+                    else
+                    {
+                        CreateEvent(schedule);
+                    }
+                }
+
+                user.EventsSent = true;
+                UnitOfWork.SaveChanges();
             }
         }
 
         public void ImportTimeTable(IEnumerable<ImportLine> importLines, Document document)
         {
             var groupedSchedules = importLines.GroupBy(il => il.Subgroup);
+
             foreach (var subgroupSchedules in groupedSchedules)
             {
                 var timeTable = AddTimeTable(subgroupSchedules.Key, document);
@@ -110,11 +141,11 @@ namespace Schedent.BusinessLogic.Services
                     StartsAt = ss.Start,
                     Duration = ss.Duration,
                     CreatedOn = DateTime.Now
-                });
+                }).ToList();
 
                 UnitOfWork.ScheduleRepository.AddRange(schedules);
 
-                var notifications = AddNotifications(timeTable);
+                AddNotifications(timeTable);
                 AddEvents(timeTable);
                 InactivateSubgroupTimeTable(timeTable.SubgroupId);
             }
@@ -160,7 +191,7 @@ namespace Schedent.BusinessLogic.Services
             {
                 notifications.Add(new Domain.Entities.Notification
                 {
-                    Message = "Your first timetable has been uploaded! Please check your schedule",
+                    Message = "Primul orar a fost încărcat! Acum poți să verifici activitățile didactice.",
                     SubgroupId = newTimeTable.SubgroupId,
                     IsSent = false,
                     CreatedOn = DateTime.Now,
@@ -179,27 +210,27 @@ namespace Schedent.BusinessLogic.Services
 
                     if (newSchedule.ProfessorId != oldSchedule.ProfessorId)
                     {
-                        notifications.Add(notificationFactory.GetNotification(nameof(newSchedule.ProfessorId), oldSchedule, newSchedule));
+                        notifications.AddRange(notificationFactory.GetNotification(nameof(newSchedule.ProfessorId), oldSchedule, newSchedule));
                     }
 
                     if (newSchedule.Day != oldSchedule.Day)
                     {
-                       notifications.Add(notificationFactory.GetNotification(nameof(newSchedule.Day), oldSchedule, newSchedule));
+                       notifications.AddRange(notificationFactory.GetNotification(nameof(newSchedule.Day), oldSchedule, newSchedule));
                     }
 
                     if (newSchedule.Duration != oldSchedule.Duration)
                     {
-                       notifications.Add(notificationFactory.GetNotification(nameof(newSchedule.Duration), oldSchedule, newSchedule));
+                       notifications.AddRange(notificationFactory.GetNotification(nameof(newSchedule.Duration), oldSchedule, newSchedule));
                     }
 
                     if (newSchedule.StartsAt != oldSchedule.StartsAt)
                     {
-                       notifications.Add(notificationFactory.GetNotification(nameof(newSchedule.StartsAt), oldSchedule, newSchedule));
+                       notifications.AddRange(notificationFactory.GetNotification(nameof(newSchedule.StartsAt), oldSchedule, newSchedule));
                     }
 
                     if (newSchedule.Week != oldSchedule.Week)
                     {
-                       notifications.Add(notificationFactory.GetNotification(nameof(newSchedule.Week), oldSchedule, newSchedule));
+                       notifications.AddRange(notificationFactory.GetNotification(nameof(newSchedule.Week), oldSchedule, newSchedule));
                     }
                 }
             }
@@ -237,60 +268,100 @@ namespace Schedent.BusinessLogic.Services
 
         public void CreateEvent(Schedule schedule)
         {
-            var semDayStart = "21";
+            var semDayStart = schedule.Week == 2 ? "21" : "14";
             var semMonthStart = "02";
             var yearStart = "2022";
+            var recurrence = $"{"RRULE:FREQ=WEEKLY;UNTIL=20220508T200000Z"}{(schedule.Week == 0 ? "" : ";INTERVAL=2")}";
             var atendeeEmails = UnitOfWork.UserRepository.Find(u => u.SubgroupId == schedule.TimeTable.SubgroupId)
                                                          .Select(u => new EventAttendee
                                                          {
                                                              Email = u.Email
                                                          }).ToList();
-
-            var ev = new Event
+            atendeeEmails.AddRange(UnitOfWork.UserRepository.Find(u => u.ProfessorId == schedule.ProfessorId).Select(u => new EventAttendee
             {
-                Summary = schedule.Subject.Name,
-                Start = new EventDateTime
-                {
-                    DateTime = Convert.ToDateTime((int.Parse(semDayStart) + (int)Enum.Parse(typeof(WeekDays), schedule.Day)).ToString() + "/" + semMonthStart + "/" + yearStart + " " + schedule.StartsAt + ":00:00"),
-                    TimeZone = "Europe/Bucharest"
-                },
-                End = new EventDateTime
-                {
-                    DateTime = Convert.ToDateTime((int.Parse(semDayStart) + (int)Enum.Parse(typeof(WeekDays), schedule.Day)).ToString() + "/" + semMonthStart + "/" + yearStart + " " + (int.Parse(schedule.StartsAt) + schedule.Duration).ToString() + ":00:00"),
-                    TimeZone = "Europe/Bucharest"
-                },
-                Recurrence = new String[]
-                {
-                    "RRULE:FREQ=WEEKLY;UNTIL=20220508T200000Z"
-                },
-                Attendees = new List<EventAttendee>() { new EventAttendee
-                {
-                    Email = "cristinamadalinaprodan@gmail.com",
-                }, 
-                new EventAttendee
-                {
-                    Email = "prodan.cristiana.c3s@student.ucv.ro",
-                }}
-            };
+                Email = u.Email
+            }).ToList());
+            var oldSchedule = UnitOfWork.ScheduleRepository.SingleOrDefault(s => s.TimeTable.SubgroupId == schedule.TimeTable.SubgroupId && s.TimeTable.IsActive && s.SubjectId == schedule.SubjectId && s.ScheduleType == schedule.ScheduleType);
+            var service = GetService();
 
-            GetService().Events.Insert(ev, "primary").Execute();
+            if (atendeeEmails.Any())
+            {
+                var ev = new Event
+                {
+                    Summary = schedule.Subject.Name,
+                    Organizer = new Event.OrganizerData
+                    {
+                        DisplayName = schedule.Professor.Name,
+                    },
+                    Start = new EventDateTime
+                    {
+                        DateTime = Convert.ToDateTime((int.Parse(semDayStart) + (int)Enum.Parse(typeof(WeekDays), schedule.Day)).ToString() + "/" + semMonthStart + "/" + yearStart + " " + schedule.StartsAt + ":00:00"),
+                        TimeZone = "Europe/Bucharest"
+                    },
+                    End = new EventDateTime
+                    {
+                        DateTime = Convert.ToDateTime((int.Parse(semDayStart) + (int)Enum.Parse(typeof(WeekDays), schedule.Day)).ToString() + "/" + semMonthStart + "/" + yearStart + " " + (int.Parse(schedule.StartsAt) + schedule.Duration).ToString() + ":00:00"),
+                        TimeZone = "Europe/Bucharest"
+                    },
+                    Recurrence = new string[] { recurrence },
+                    Attendees = atendeeEmails
+                };
+
+                var createdEvent = service.Events.Insert(ev, "primary").Execute();
+                schedule.EventId = createdEvent.Id;
+            }
+
+            if (oldSchedule is not null && oldSchedule.EventId is not null)
+            {
+                try { service.Events.Delete("primary", oldSchedule.EventId).Execute(); }
+                catch { }
+            }
         }
 
-        public async Task SendFirebaseNotification(IEnumerable<Domain.Entities.Notification> notifications)
+        public void AddAtendeeToEvent(Schedule schedule)
+        {
+            var service = GetService();
+            var atendeeEmails = UnitOfWork.UserRepository.Find(u => u.SubgroupId == schedule.TimeTable.SubgroupId)
+                                                         .Select(u => new EventAttendee
+                                                         {
+                                                             Email = u.Email
+                                                         }).ToList();
+            atendeeEmails.AddRange(UnitOfWork.UserRepository.Find(u => u.ProfessorId == schedule.ProfessorId).Select(u => new EventAttendee
+            {
+                Email = u.Email
+            }).ToList());
+
+            var existingEvent = service.Events.Get("primary", schedule.EventId).Execute();
+            if (existingEvent != null && existingEvent.Status != "cancelled")
+            {
+                existingEvent.Attendees = atendeeEmails;
+                service.Events.Patch(existingEvent, "primary", schedule.EventId).Execute();
+            }
+            else
+            {
+                CreateEvent(schedule);
+            }
+        }
+
+        public async Task SendFirebaseNotificationsAsync(IEnumerable<Domain.Entities.Notification> notifications)
         {
             foreach (var notification in notifications)
             {
-                var message = new MulticastMessage
+                if ((notification.Subgroup?.Users != null && notification.Subgroup?.Users.Count != 0) || notification.Professor?.User != null)
                 {
-                    Tokens = notification.Subgroup.Users.Select(u => u.DeviceToken).ToList(),
-                    Notification = new FirebaseAdmin.Messaging.Notification
+                    var message = new MulticastMessage
                     {
-                        Title = "Orarul tau a fost modificat",
-                        Body = notification.Message
-                    },
-                };
+                        Tokens = notification.Subgroup != null ? notification.Subgroup.Users.Select(u => u.DeviceToken).ToList() : new List<string>() { notification.Professor.User.DeviceToken },
+                        Notification = new FirebaseAdmin.Messaging.Notification
+                        {
+                            Title = "Orarul tău a fost modificat",
+                            Body = notification.Message
+                        },
+                    };
 
-                var result = await FirebaseMessaging.DefaultInstance.SendMulticastAsync(message);
+                    await FirebaseMessaging.DefaultInstance.SendMulticastAsync(message);
+                    notification.IsSent = true;
+                }
             }
         }
     }

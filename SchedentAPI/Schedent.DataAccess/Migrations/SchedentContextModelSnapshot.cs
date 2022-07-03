@@ -114,10 +114,15 @@ namespace Schedent.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SubgroupId")
+                    b.Property<int?>("ProfessorId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SubgroupId")
                         .HasColumnType("int");
 
                     b.HasKey("NotificationId");
+
+                    b.HasIndex("ProfessorId");
 
                     b.HasIndex("SubgroupId");
 
@@ -161,6 +166,9 @@ namespace Schedent.DataAccess.Migrations
 
                     b.Property<float>("Duration")
                         .HasColumnType("real");
+
+                    b.Property<string>("EventId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ProfessorId")
                         .HasColumnType("int");
@@ -315,6 +323,9 @@ namespace Schedent.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("EventsSent")
+                        .HasColumnType("bit");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -345,7 +356,9 @@ namespace Schedent.DataAccess.Migrations
 
                     b.HasKey("UserId");
 
-                    b.HasIndex("ProfessorId");
+                    b.HasIndex("ProfessorId")
+                        .IsUnique()
+                        .HasFilter("[ProfessorId] IS NOT NULL");
 
                     b.HasIndex("SubgroupId");
 
@@ -396,11 +409,13 @@ namespace Schedent.DataAccess.Migrations
 
             modelBuilder.Entity("Schedent.Domain.Entities.Notification", b =>
                 {
+                    b.HasOne("Schedent.Domain.Entities.Professor", "Professor")
+                        .WithMany("Notifications")
+                        .HasForeignKey("ProfessorId");
+
                     b.HasOne("Schedent.Domain.Entities.Subgroup", "Subgroup")
                         .WithMany("Notifications")
-                        .HasForeignKey("SubgroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SubgroupId");
                 });
 
             modelBuilder.Entity("Schedent.Domain.Entities.Professor", b =>
@@ -478,8 +493,8 @@ namespace Schedent.DataAccess.Migrations
             modelBuilder.Entity("Schedent.Domain.Entities.User", b =>
                 {
                     b.HasOne("Schedent.Domain.Entities.Professor", "Professor")
-                        .WithMany()
-                        .HasForeignKey("ProfessorId");
+                        .WithOne("User")
+                        .HasForeignKey("Schedent.Domain.Entities.User", "ProfessorId");
 
                     b.HasOne("Schedent.Domain.Entities.Subgroup", "Subgroup")
                         .WithMany("Users")

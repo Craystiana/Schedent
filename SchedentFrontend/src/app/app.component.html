@@ -1,43 +1,14 @@
 <ion-app>
-  <ion-menu side="start" class="ion-text-center" contentId="menuContent">
-    <ion-header>
-      <ion-toolbar color="primary">
-        <ion-title text-center>Menu</ion-title>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-content *ngIf="authService.isAuthenticated()" contentId="main">
-      <ion-item class="ion-text-center">
-        <ion-grid>
-          <ion-row>
-            <ion-col offset-lg="3" size-lg="6">
-              <ion-chip button>
-                <ion-label>{{this.authService.currentUserName}}</ion-label>
-              </ion-chip>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-item>
-      <ion-list>
-        <ion-menu-toggle>
-          <ion-item lines="none" (click)="onLogout()" button>
-            <ion-label>Logout</ion-label>
-            <ion-icon name="log-out-outline" slot="start"></ion-icon>
-          </ion-item>
-        </ion-menu-toggle>
-      </ion-list>
-    </ion-content>
-  </ion-menu>
   <ion-router-outlet id="menuContent"></ion-router-outlet>
 
-  <ion-tabs>
+  <ion-tabs *ngIf="authService.isAuthenticated()">
     <ion-tab-bar slot="bottom" color="primary">
       <ion-tab-button tab="home">
         <ion-icon name="calendar-outline"></ion-icon>
         <ion-label>Orar</ion-label>
       </ion-tab-button>
   
-      <ion-tab-button tab="notification">
+      <ion-tab-button tab="notification" *ngIf="!authService.isAdmin()">
         <ion-icon name="notifications-outline"></ion-icon>
         <ion-label>Notificari</ion-label>
       </ion-tab-button>

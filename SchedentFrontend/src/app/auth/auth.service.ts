@@ -83,7 +83,7 @@ export class AuthService {
   }
 
   public isAdmin(): boolean {
-    if (this.isAuthenticated() === true) {
+    if (this.isAuthenticated()) {
       return this.currentUserSubject.value.userRole === UserRole.Admin;
     } else {
       return false;
@@ -93,6 +93,14 @@ export class AuthService {
   public isProfessor(): boolean {
     if (this.isAuthenticated() === true) {
       return this.currentUserSubject.value.userRole === UserRole.Professor;
+    } else {
+      return false;
+    }
+  }
+
+  public isStudent(): boolean {
+    if (this.isAuthenticated() === true) {
+      return this.currentUserSubject.value.userRole === UserRole.Student;
     } else {
       return false;
     }

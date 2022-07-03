@@ -29,7 +29,7 @@
     <ProjectReference Include="..\Schedent.DataAccess\Schedent.DataAccess.csproj" />
   </ItemGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions><VisualStudio><UserProperties token_1json_4google_1apis_1auth_1oauth2_1responses_1tokenresponse-user__JsonSchema="https://json.schemastore.org/appsettings.json" /></VisualStudio></ProjectExtensions>
 
 
 </Project>

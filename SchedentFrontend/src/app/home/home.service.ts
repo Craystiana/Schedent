@@ -36,7 +36,7 @@ import { ScheduleListModel } from "../models/schedule/scheduleListModel";
     }
 
     editDeviceToken(token: string) {
-      return this.http.put(API_URL + EDIT_DEVICE_TOKEN, token).pipe(
+      return this.http.put(API_URL + EDIT_DEVICE_TOKEN + token, null).pipe(
         map((result: boolean) => {
           return result;
         })

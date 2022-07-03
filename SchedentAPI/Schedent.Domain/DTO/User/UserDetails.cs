@@ -8,12 +8,12 @@
 
         public string EmailAddress { get; set; }
 
-        public int FacultyId { get; set; }
+        public int? FacultyId { get; set; }
         
-        public int SectionId { get; set; }
+        public int? SectionId { get; set; }
 
-        public int GroupId { get; set; }
+        public int? GroupId { get; set; }
 
-        public int SubgroupId { get; set; }
+        public int? SubgroupId { get; set; }
     }
 }
