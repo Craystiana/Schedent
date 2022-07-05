@@ -1,5 +1,4 @@
 ﻿using Schedent.Domain.Entities;
-using System;
 
 namespace Schedent.Domain.Interfaces.Repositories
 {

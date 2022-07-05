@@ -114,12 +114,12 @@ namespace Schedent.BusinessLogic.Services
                     }
                     else
                     {
-                        CreateEvent(schedule);
+                        CreateEventForNewUser(schedule);
                     }
                 }
 
                 user.EventsSent = true;
-                UnitOfWork.SaveChanges();
+                Save();
             }
         }
 
@@ -318,6 +318,52 @@ namespace Schedent.BusinessLogic.Services
             }
         }
 
+        public void CreateEventForNewUser(Schedule schedule)
+        {
+            var semDayStart = schedule.Week == 2 ? "21" : "14";
+            var semMonthStart = "02";
+            var yearStart = "2022";
+            var recurrence = $"{"RRULE:FREQ=WEEKLY;UNTIL=20220508T200000Z"}{(schedule.Week == 0 ? "" : ";INTERVAL=2")}";
+            var atendeeEmails = UnitOfWork.UserRepository.Find(u => u.SubgroupId == schedule.TimeTable.SubgroupId)
+                                                         .Select(u => new EventAttendee
+                                                         {
+                                                             Email = u.Email
+                                                         }).ToList();
+            atendeeEmails.AddRange(UnitOfWork.UserRepository.Find(u => u.ProfessorId == schedule.ProfessorId).Select(u => new EventAttendee
+            {
+                Email = u.Email
+            }).ToList());
+
+            var service = GetService();
+
+            if (atendeeEmails.Any())
+            {
+                var ev = new Event
+                {
+                    Summary = schedule.Subject.Name,
+                    Organizer = new Event.OrganizerData
+                    {
+                        DisplayName = schedule.Professor.Name,
+                    },
+                    Start = new EventDateTime
+                    {
+                        DateTime = Convert.ToDateTime((int.Parse(semDayStart) + (int)Enum.Parse(typeof(WeekDays), schedule.Day)).ToString() + "/" + semMonthStart + "/" + yearStart + " " + schedule.StartsAt + ":00:00"),
+                        TimeZone = "Europe/Bucharest"
+                    },
+                    End = new EventDateTime
+                    {
+                        DateTime = Convert.ToDateTime((int.Parse(semDayStart) + (int)Enum.Parse(typeof(WeekDays), schedule.Day)).ToString() + "/" + semMonthStart + "/" + yearStart + " " + (int.Parse(schedule.StartsAt) + schedule.Duration).ToString() + ":00:00"),
+                        TimeZone = "Europe/Bucharest"
+                    },
+                    Recurrence = new string[] { recurrence },
+                    Attendees = atendeeEmails
+                };
+
+                var createdEvent = service.Events.Insert(ev, "primary").Execute();
+                schedule.EventId = createdEvent.Id;
+            }
+        }
+
         public void AddAtendeeToEvent(Schedule schedule)
         {
             var service = GetService();
@@ -339,7 +385,7 @@ namespace Schedent.BusinessLogic.Services
             }
             else
             {
-                CreateEvent(schedule);
+                CreateEventForNewUser(schedule);
             }
         }
 
@@ -351,7 +397,9 @@ namespace Schedent.BusinessLogic.Services
                 {
                     var message = new MulticastMessage
                     {
-                        Tokens = notification.Subgroup != null ? notification.Subgroup.Users.Select(u => u.DeviceToken).ToList() : new List<string>() { notification.Professor.User.DeviceToken },
+                        Tokens = notification.Subgroup != null ? 
+                                 notification.Subgroup.Users.Select(u => u.DeviceToken).ToList() : 
+                                 new List<string>() { notification.Professor.User.DeviceToken },
                         Notification = new FirebaseAdmin.Messaging.Notification
                         {
                             Title = "Orarul tău a fost modificat",

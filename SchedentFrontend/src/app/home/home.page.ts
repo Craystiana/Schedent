@@ -45,20 +45,14 @@ export class HomePage implements OnInit {
    }
 
   ngOnInit() {
-    // Request permission to use push notifications
-    // iOS will prompt user and return if they granted permission or not
-    // Android will just grant without prompting
     PushNotifications.requestPermissions().then(async result => {
       try {
-      if (result.receive === 'granted') {
-        // Register with Apple / Google to receive push via APNS/FCM
-        await PushNotifications.register();
-      } else {
-        // Show some error
+        if (result.receive === 'granted') {
+          await PushNotifications.register();
+        }
+      }catch(exception){
+          console.log(exception);
       }
-    }catch(exception){
-        console.log(exception);
-    }
     });
 
     PushNotifications.addListener('registration', (token: Token) => {
@@ -69,15 +63,13 @@ export class HomePage implements OnInit {
       alert('Error on registration: ' + JSON.stringify(error));
     });
 
-    PushNotifications.addListener(
-      'pushNotificationReceived',
+    PushNotifications.addListener('pushNotificationReceived',
       (notification: PushNotificationSchema) => {
         alert('Push received: ' + JSON.stringify(notification));
       },
     );
 
-    PushNotifications.addListener(
-      'pushNotificationActionPerformed',
+    PushNotifications.addListener('pushNotificationActionPerformed',
       (notification: ActionPerformed) => {
         alert('Push action performed: ' + JSON.stringify(notification));
       },
