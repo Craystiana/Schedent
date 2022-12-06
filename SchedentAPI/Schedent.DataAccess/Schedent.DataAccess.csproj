@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <CodeAnalysisRuleSet>..\.sonarlint\craystiana_schedentcsharp.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,6 +16,10 @@
     <Compile Remove="Migrations\20220407165703_AddNotification.Designer.cs" />
     <Compile Remove="Migrations\20220407194930_AddNotification.cs" />
     <Compile Remove="Migrations\20220407194930_AddNotification.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\.sonarlint\craystiana_schedent\CSharp\SonarLint.xml" Link="SonarLint.xml" />
   </ItemGroup>
 
   <ItemGroup>

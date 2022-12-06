@@ -208,6 +208,8 @@ namespace Schedent.BusinessLogic.Services
                     var oldSchedule = oldSchedules.FirstOrDefault(os => os.SubjectId == newSchedule.SubjectId
                                                                      && os.ScheduleTypeId == newSchedule.ScheduleTypeId);
 
+                    if (oldSchedule == null) continue;
+
                     if (newSchedule.ProfessorId != oldSchedule.ProfessorId)
                     {
                         notifications.AddRange(notificationFactory.GetNotification(nameof(newSchedule.ProfessorId), oldSchedule, newSchedule));
