@@ -49,55 +49,27 @@ namespace Schedent.BusinessLogic.Services
 
             foreach (var document in documents)
             {
-                try
-                {
-                    var importLines = new List<ImportLine>();
+                var importLines = new List<ImportLine>();
 
-                    using (var package = new ExcelPackage(new MemoryStream(document.File)))
+                using (var package = new ExcelPackage(new MemoryStream(document.File)))
+                {
+                    var cells = package.Workbook.Worksheets.First().Cells;
+                    var continueProcessing = true;
+                    var faculty = UnitOfWork.FacultyRepository.SingleOrDefault(f => f.Name == cells[1, 1].Value.ToString());
+                    var section = UnitOfWork.SectionRepository.SingleOrDefault(s => s.Name == cells[2, 1].Value.ToString() && s.FacultyId == faculty.FacultyId);
+                    var row = 4;
+
+                    while (continueProcessing)
                     {
-                        var cells = package.Workbook.Worksheets.First().Cells;
-                        var continueProcessing = true;
-                        var faculty = UnitOfWork.FacultyRepository.SingleOrDefault(f => f.Name == cells[1, 1].Value.ToString());
-                        var section = UnitOfWork.SectionRepository.SingleOrDefault(s => s.Name == cells[2, 1].Value.ToString() && s.FacultyId == faculty.FacultyId);
-                        var row = 4;
+                        AddRow(importLines, cells, faculty, section, row);
 
-                        while (continueProcessing)
-                        {
-                            var group = UnitOfWork.GroupRepository.SingleOrDefault(g => g.Name == cells[row, 1].Value.ToString() && g.SectionId == section.SectionId);
-                            var subgroup = UnitOfWork.SubgroupRepository.SingleOrDefault(s => s.Name == cells[row, 2].Value.ToString() && s.GroupId == group.GroupId);
-                            var day = cells[row, 3].Value.ToString();
-                            var start = cells[row, 4].Value.ToString();
-                            int.TryParse(cells[row, 5].Value.ToString(), out var duration);
-                            var subject = UnitOfWork.SubjectRepository.SingleOrDefault(s => s.Name == cells[row, 6].Value.ToString() && s.SectionId == section.SectionId);
-                            var type = UnitOfWork.ScheduleTypeRepository.SingleOrDefault(st => st.Name == cells[row, 7].Value.ToString());
-                            var professor = UnitOfWork.ProfessorRepository.SingleOrDefault(p => p.Name == cells[row, 8].Value.ToString() && p.FacultyId == faculty.FacultyId);
-                            int.TryParse(cells[row, 9].Value.ToString(), out var week);
-
-                            importLines.Add(new ImportLine
-                            {
-                                Group = group,
-                                Subgroup = subgroup,
-                                Day = day,
-                                Start = start,
-                                Duration = duration,
-                                Subject = subject,
-                                Type = type,
-                                Professor = professor,
-                                Week = week
-                            });
-
-                            continueProcessing = cells[++row, 1].Value != null;
-                        }
+                        continueProcessing = cells[++row, 1].Value != null;
                     }
+                }
 
-                    ImportTimeTable(importLines, document);
-                    var notifications = UnitOfWork.NotificationRepository.GetNotificationsByIds();
-                    await SendFirebaseNotificationsAsync(notifications);
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
+                ImportTimeTable(importLines, document);
+                var notifications = UnitOfWork.NotificationRepository.GetNotificationsByIds();
+                await SendFirebaseNotificationsAsync(notifications);
             }
 
             foreach (var user in users)
@@ -121,6 +93,32 @@ namespace Schedent.BusinessLogic.Services
                 user.EventsSent = true;
                 Save();
             }
+        }
+
+        private void AddRow(List<ImportLine> importLines, ExcelRange cells, Faculty faculty, Section section, int row)
+        {
+            var group = UnitOfWork.GroupRepository.SingleOrDefault(g => g.Name == cells[row, 1].Value.ToString() && g.SectionId == section.SectionId);
+            var subgroup = UnitOfWork.SubgroupRepository.SingleOrDefault(s => s.Name == cells[row, 2].Value.ToString() && s.GroupId == group.GroupId);
+            var day = cells[row, 3].Value.ToString();
+            var start = cells[row, 4].Value.ToString();
+            _ = int.TryParse(cells[row, 5].Value.ToString(), out var duration);
+            var subject = UnitOfWork.SubjectRepository.SingleOrDefault(s => s.Name == cells[row, 6].Value.ToString() && s.SectionId == section.SectionId);
+            var type = UnitOfWork.ScheduleTypeRepository.SingleOrDefault(st => st.Name == cells[row, 7].Value.ToString());
+            var professor = UnitOfWork.ProfessorRepository.SingleOrDefault(p => p.Name == cells[row, 8].Value.ToString() && p.FacultyId == faculty.FacultyId);
+            _ = int.TryParse(cells[row, 9].Value.ToString(), out var week);
+
+            importLines.Add(new ImportLine
+            {
+                Group = group,
+                Subgroup = subgroup,
+                Day = day,
+                Start = start,
+                Duration = duration,
+                Subject = subject,
+                Type = type,
+                Professor = professor,
+                Week = week
+            });
         }
 
         public void ImportTimeTable(IEnumerable<ImportLine> importLines, Document document)
@@ -209,37 +207,41 @@ namespace Schedent.BusinessLogic.Services
                                                                      && os.ScheduleTypeId == newSchedule.ScheduleTypeId);
 
                     if (oldSchedule == null) continue;
-
-                    if (newSchedule.ProfessorId != oldSchedule.ProfessorId)
-                    {
-                        notifications.AddRange(notificationFactory.GetNotification(nameof(newSchedule.ProfessorId), oldSchedule, newSchedule));
-                    }
-
-                    if (newSchedule.Day != oldSchedule.Day)
-                    {
-                       notifications.AddRange(notificationFactory.GetNotification(nameof(newSchedule.Day), oldSchedule, newSchedule));
-                    }
-
-                    if (newSchedule.Duration != oldSchedule.Duration)
-                    {
-                       notifications.AddRange(notificationFactory.GetNotification(nameof(newSchedule.Duration), oldSchedule, newSchedule));
-                    }
-
-                    if (newSchedule.StartsAt != oldSchedule.StartsAt)
-                    {
-                       notifications.AddRange(notificationFactory.GetNotification(nameof(newSchedule.StartsAt), oldSchedule, newSchedule));
-                    }
-
-                    if (newSchedule.Week != oldSchedule.Week)
-                    {
-                       notifications.AddRange(notificationFactory.GetNotification(nameof(newSchedule.Week), oldSchedule, newSchedule));
-                    }
+                    AddNotifications(notifications, notificationFactory, newSchedule, oldSchedule);
                 }
             }
 
             UnitOfWork.NotificationRepository.AddRange(notifications);
 
             return notifications;
+        }
+
+        private static void AddNotifications(List<Domain.Entities.Notification> notifications, NotificationFactory notificationFactory, Schedule newSchedule, Schedule oldSchedule)
+        {
+            if (newSchedule.ProfessorId != oldSchedule.ProfessorId)
+            {
+                notifications.AddRange(notificationFactory.GetNotification(nameof(newSchedule.ProfessorId), oldSchedule, newSchedule));
+            }
+
+            if (newSchedule.Day != oldSchedule.Day)
+            {
+                notifications.AddRange(notificationFactory.GetNotification(nameof(newSchedule.Day), oldSchedule, newSchedule));
+            }
+
+            if (newSchedule.Duration != oldSchedule.Duration)
+            {
+                notifications.AddRange(notificationFactory.GetNotification(nameof(newSchedule.Duration), oldSchedule, newSchedule));
+            }
+
+            if (newSchedule.StartsAt != oldSchedule.StartsAt)
+            {
+                notifications.AddRange(notificationFactory.GetNotification(nameof(newSchedule.StartsAt), oldSchedule, newSchedule));
+            }
+
+            if (newSchedule.Week != oldSchedule.Week)
+            {
+                notifications.AddRange(notificationFactory.GetNotification(nameof(newSchedule.Week), oldSchedule, newSchedule));
+            }
         }
 
         public void AddEvents(TimeTable timeTable)
@@ -316,7 +318,7 @@ namespace Schedent.BusinessLogic.Services
             if (oldSchedule is not null && oldSchedule.EventId is not null)
             {
                 try { service.Events.Delete("primary", oldSchedule.EventId).Execute(); }
-                catch { }
+                catch { /* If the Google Calendar deletion throws an error it means that the event is already deleted, therefore nothing should be done */ }
             }
         }
 
@@ -391,7 +393,7 @@ namespace Schedent.BusinessLogic.Services
             }
         }
 
-        public async Task SendFirebaseNotificationsAsync(IEnumerable<Domain.Entities.Notification> notifications)
+        public static async Task SendFirebaseNotificationsAsync(IEnumerable<Domain.Entities.Notification> notifications)
         {
             foreach (var notification in notifications)
             {

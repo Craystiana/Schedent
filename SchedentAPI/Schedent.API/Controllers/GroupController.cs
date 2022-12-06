@@ -29,7 +29,7 @@ namespace Schedent.API.Controllers
             }
             catch(Exception ex)
             {
-                _logger.LogError(ex.ToString());
+                _logger.LogError("An error occured: {error}", ex.ToString());
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }

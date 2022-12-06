@@ -23,7 +23,7 @@ namespace Schedent.BusinessLogic.Services
             return document;
         }
 
-        public byte[] ConvertToByteArray(string file)
+        public static byte[] ConvertToByteArray(string file)
         {
             return string.IsNullOrEmpty(file) ? null : Convert.FromBase64String(file);
         }

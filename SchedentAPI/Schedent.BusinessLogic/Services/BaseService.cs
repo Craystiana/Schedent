@@ -1,6 +1,4 @@
-﻿using OfficeOpenXml;
-using Schedent.Domain.Interfaces;
-using System;
+﻿using Schedent.Domain.Interfaces;
 
 namespace Schedent.BusinessLogic.Services
 {
@@ -15,15 +13,7 @@ namespace Schedent.BusinessLogic.Services
 
         private protected void Save()
         {
-            try
-            {
-                UnitOfWork.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                // TODO: Log exception
-                throw ex;
-            }
+            UnitOfWork.SaveChanges();
         }
     }
 }

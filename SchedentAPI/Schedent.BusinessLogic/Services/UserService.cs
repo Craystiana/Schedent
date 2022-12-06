@@ -57,7 +57,7 @@ namespace Schedent.BusinessLogic.Services
             }
         }
 
-        private string GenerateSalt()
+        private static string GenerateSalt()
         {
             byte[] salt = new byte[50 / 8];
 
@@ -69,13 +69,11 @@ namespace Schedent.BusinessLogic.Services
             return Convert.ToBase64String(salt);
         }
 
-        private string CreatePasswordHash(string password, string salt)
+        private static string CreatePasswordHash(string password, string salt)
         {
-            using var sha1 = SHA1.Create();
-            {
-                var hashedBytes = sha1.ComputeHash(Encoding.UTF8.GetBytes(password + salt));
-                return BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
-            }
+            var sha1 = SHA1.Create();
+            var hashedBytes = sha1.ComputeHash(Encoding.UTF8.GetBytes(password + salt));
+            return BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
         }
 
         public UserDetails GetUserDetails(int userId)

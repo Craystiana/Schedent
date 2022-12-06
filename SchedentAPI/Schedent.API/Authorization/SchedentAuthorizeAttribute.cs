@@ -10,6 +10,7 @@ using System.Linq;
 
 namespace Schedent.API.Authorization
 {
+    [AttributeUsage(AttributeTargets.All)]
     public class SchedentAuthorizeAttribute : Attribute, IAuthorizationFilter
     {
         private readonly int[] _userRoles;
@@ -57,7 +58,7 @@ namespace Schedent.API.Authorization
                     }, out SecurityToken validatedToken);
 
                     var jwtToken = (JwtSecurityToken)validatedToken;
-                    int.TryParse(jwtToken.Claims.FirstOrDefault(x => x.Type == ((int)TokenClaim.UserRoleId).ToString())?.Value, out var userRoleId);
+                    _ = int.TryParse(jwtToken.Claims.FirstOrDefault(x => x.Type == ((int)TokenClaim.UserRoleId).ToString())?.Value, out var userRoleId);
 
                     if (!_userRoles.Contains(userRoleId))
                     {

@@ -26,7 +26,7 @@ namespace Schedent.BusinessLogic.Services
             return GroupAndOrderSchedules(schedules);
         }
 
-        public IEnumerable<ScheduleListModel> GroupAndOrderSchedules(IEnumerable<Schedule> schedules)
+        public static IEnumerable<ScheduleListModel> GroupAndOrderSchedules(IEnumerable<Schedule> schedules)
         {
             return schedules.GroupBy(s => s.Day).Select(s => new ScheduleListModel
             {

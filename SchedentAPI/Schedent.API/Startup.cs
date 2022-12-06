@@ -86,7 +86,6 @@ namespace Schedent.API
             services.AddScoped<DocumentService>();
             services.AddScoped<ScheduleService>();
             services.AddScoped<NotificationService>();
-            services.AddScoped<GoogleCalendarService>();
 
             services.Configure<GoogleCalendarSettings>(Configuration.GetSection(nameof(GoogleCalendarSettings)));
             services.Configure<FirebaseSettings>(Configuration.GetSection(nameof(FirebaseSettings)));
