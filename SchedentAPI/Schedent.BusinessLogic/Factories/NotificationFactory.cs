@@ -9,6 +9,9 @@ namespace Schedent.BusinessLogic.Factories
     {
         private readonly IDictionary<string, Func<Schedule, Schedule, IEnumerable<Notification>>> _dict;
 
+        /// <summary>
+        /// NotificationFactory constructor
+        /// </summary>
         public NotificationFactory()
         {
             _dict = new Dictionary<string, Func<Schedule, Schedule, IEnumerable<Notification>>>
@@ -21,6 +24,13 @@ namespace Schedent.BusinessLogic.Factories
             };
         }
 
+        /// <summary>
+        /// Calls the corresponding notification method by the given property
+        /// </summary>
+        /// <param name="property"></param>
+        /// <param name="oldSchedule"></param>
+        /// <param name="newSchedule"></param>
+        /// <returns></returns>
         public IEnumerable<Notification> GetNotification(string property, Schedule oldSchedule, Schedule newSchedule)
         {
             if (_dict.ContainsKey(property))
@@ -33,6 +43,12 @@ namespace Schedent.BusinessLogic.Factories
             }
         }
 
+        /// <summary>
+        /// Create notifications for the change of the day in the schedule
+        /// </summary>
+        /// <param name="oldSchedule"></param>
+        /// <param name="newSchedule"></param>
+        /// <returns></returns>
         private IEnumerable<Notification> GetDayChangeNotification(Schedule oldSchedule, Schedule newSchedule)
         {
             return new List<Notification>()
@@ -54,6 +70,12 @@ namespace Schedent.BusinessLogic.Factories
             };
         }
 
+        /// <summary>
+        /// Create notifications for the change of the week in the schedule
+        /// </summary>
+        /// <param name="oldSchedule"></param>
+        /// <param name="newSchedule"></param>
+        /// <returns></returns>
         private IEnumerable<Notification> GetWeekChangeNotification(Schedule oldSchedule, Schedule newSchedule)
         {
             static string getWeek(int week)
@@ -91,6 +113,12 @@ namespace Schedent.BusinessLogic.Factories
             };
         }
 
+        /// <summary>
+        /// Create notifications for the change of the professor in the schedule
+        /// </summary>
+        /// <param name="oldSchedule"></param>
+        /// <param name="newSchedule"></param>
+        /// <returns></returns>
         private IEnumerable<Notification> GetProfessorChangeNotification(Schedule oldSchedule, Schedule newSchedule)
         {
             return new List<Notification>()
@@ -113,6 +141,12 @@ namespace Schedent.BusinessLogic.Factories
             };
         }
 
+        /// <summary>
+        /// Create notifications for the change of the duration in the schedule
+        /// </summary>
+        /// <param name="oldSchedule"></param>
+        /// <param name="newSchedule"></param>
+        /// <returns></returns>
         private IEnumerable<Notification> GetDurationChangeNotification(Schedule oldSchedule, Schedule newSchedule)
         {
             return new List<Notification>()
@@ -133,6 +167,12 @@ namespace Schedent.BusinessLogic.Factories
             };
         }
 
+        /// <summary>
+        /// Create notifications for the change of the staring time in the schedule
+        /// </summary>
+        /// <param name="oldSchedule"></param>
+        /// <param name="newSchedule"></param>
+        /// <returns></returns>
         private IEnumerable<Notification> GetStartsAtChangeNotification(Schedule oldSchedule, Schedule newSchedule)
         {
             return new List<Notification>()

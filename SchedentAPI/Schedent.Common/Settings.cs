@@ -7,6 +7,10 @@ namespace Schedent.Common
     {
         private static IConfiguration _configuration;
 
+        /// <summary>
+        /// Setter for the configuration
+        /// </summary>
+        /// <param name="configuration"></param>
         public static void SetConfig(IConfiguration configuration)
         {
             if (_configuration == null)
@@ -15,6 +19,9 @@ namespace Schedent.Common
             }
         }
 
+        /// <summary>
+        /// Get the version from the appsettings file
+        /// </summary>
         public static string Version
         {
             get
@@ -30,6 +37,9 @@ namespace Schedent.Common
             }
         }
 
+        /// <summary>
+        /// Get the connection string from the appsettings file
+        /// </summary>
         public static string DatabaseConnectionString
         {
             get
@@ -45,6 +55,9 @@ namespace Schedent.Common
             }
         }
 
+        /// <summary>
+        /// Get the token secret from the appsettings file
+        /// </summary>
         public static string TokenSecret
         {
             get
@@ -60,6 +73,9 @@ namespace Schedent.Common
             }
         }
 
+        /// <summary>
+        /// Convert the token secret to byte array
+        /// </summary>
         public static byte[] TokenSecretBytes
         {
             get
@@ -68,6 +84,9 @@ namespace Schedent.Common
             }
         }
 
+        /// <summary>
+        /// Get the api url from the appsettings  file
+        /// </summary>
         public static Uri ApiUrl
         {
             get

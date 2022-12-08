@@ -13,12 +13,23 @@ namespace Schedent.API.Controllers
         private readonly GroupService _groupService;
         private readonly ILogger<GroupController> _logger;
 
+        /// <summary>
+        /// GroupController constructor
+        /// Inject the GroupService and the logger
+        /// </summary>
+        /// <param name="groupService"></param>
+        /// <param name="logger"></param>
         public GroupController(GroupService groupService, ILogger<GroupController> logger)
         {
             _groupService = groupService;
             _logger = logger;
         }
 
+        /// <summary>
+        /// Endpoint for retrieving all groups based on the given section
+        /// </summary>
+        /// <param name="sectionId"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("All")]
         public IActionResult All([FromQuery] int sectionId)

@@ -14,12 +14,23 @@ namespace Schedent.API.Controllers
         private readonly UserService _userService;
         private readonly ILogger<UserController> _logger;
 
+        /// <summary>
+        /// UserController constructor
+        /// Inject the UserService and the logger
+        /// </summary>
+        /// <param name="userService"></param>
+        /// <param name="logger"></param>
         public UserController(UserService userService, ILogger<UserController> logger)
         {
             _userService = userService;
             _logger = logger;
         }
 
+        /// <summary>
+        /// Endpoint for authentication based on the email and the password
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("Login")]
         public IActionResult Login([FromBody] LoginModel model)
@@ -48,6 +59,11 @@ namespace Schedent.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Endpoint for creating a new user
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("Register")]
         public IActionResult Register([FromBody] RegisterModel model)
@@ -65,6 +81,10 @@ namespace Schedent.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Endpoint for retrieving the logged in user details
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("Details")]
         public IActionResult GetUserDetails()
@@ -80,6 +100,11 @@ namespace Schedent.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Endpoint for updating the profile of the logged in user
+        /// </summary>
+        /// <param name="profile"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("Profile")]
         public IActionResult Profile([FromBody] UserDetails profile)
@@ -97,6 +122,11 @@ namespace Schedent.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Endpoint for updating the device token of the logged in user
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("DeviceToken/{token}")]
         public IActionResult DeviceToken(string token)

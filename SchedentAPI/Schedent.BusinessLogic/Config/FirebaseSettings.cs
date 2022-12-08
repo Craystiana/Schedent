@@ -1,5 +1,6 @@
 ﻿namespace Schedent.BusinessLogic.Config
 {
+    // Model used for mapping the FirebaseSettings from the appsettings
     public class FirebaseSettings
     {
         public string Type { get; set; }

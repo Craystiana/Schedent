@@ -13,12 +13,22 @@ namespace Schedent.API.Controllers
         private readonly ScheduleService _scheduleService;
         private readonly ILogger<ScheduleController> _logger;
 
+        /// <summary>
+        /// ScheduleController constructor
+        /// Inject the ScheduleService and the logger
+        /// </summary>
+        /// <param name="scheduleService"></param>
+        /// <param name="logger"></param>
         public ScheduleController(ScheduleService scheduleService, ILogger<ScheduleController> logger)
         {
             _scheduleService = scheduleService;
             _logger = logger;
         }
 
+        /// <summary>
+        /// Endpoint for retrieving the schedules of the logged in user
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("Get")]
         public IActionResult Get()
@@ -34,6 +44,11 @@ namespace Schedent.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Endpoint for retrieving the schedules for the given subgroup
+        /// </summary>
+        /// <param name="subgroupId"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("Subgroup")]
         public IActionResult GetSchedulesForSubgroup([FromQuery] int subgroupId)

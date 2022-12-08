@@ -5,6 +5,10 @@ namespace Schedent.DataAccess
 {
     public class SchedentContext : DbContext
     {
+        /// <summary>
+        /// SchedentContext constructor
+        /// </summary>
+        /// <param name="options"></param>
         public SchedentContext(DbContextOptions<SchedentContext> options) : base(options) { }
 
         public virtual DbSet<UserRole> UserRoles { get; set; }

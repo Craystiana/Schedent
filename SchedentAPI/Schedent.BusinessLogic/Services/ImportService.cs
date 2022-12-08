@@ -25,11 +25,20 @@ namespace Schedent.BusinessLogic.Services
     {
         private readonly GoogleCalendarSettings _googleCalendarSettings;
 
+        /// <summary>
+        /// ImportService constructor
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        /// <param name="googleCalendarSettings"></param>
         public ImportService(IUnitOfWork unitOfWork, IOptions<GoogleCalendarSettings> googleCalendarSettings) : base(unitOfWork) 
         { 
             _googleCalendarSettings = googleCalendarSettings.Value;
         }
 
+        /// <summary>
+        /// Retrieve the unimported documents
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Document> GetDocumentsToImport()
         {
             return UnitOfWork.DocumentRepository.Find(d => !d.DocumentTimeTables.Any())
@@ -37,11 +46,19 @@ namespace Schedent.BusinessLogic.Services
                                                 .ToList();
         }
 
+        /// <summary>
+        /// Retrieve the Users without events
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<User> GetUsersWithoutSentEvents()
         {
             return UnitOfWork.UserRepository.Find(u => !u.EventsSent).ToList();
         }
 
+        /// <summary>
+        /// Import a document timetable
+        /// </summary>
+        /// <returns></returns>
         public async Task ImportTimeTableAsync()
         {
             var documents = GetDocumentsToImport();
@@ -95,6 +112,14 @@ namespace Schedent.BusinessLogic.Services
             }
         }
 
+        /// <summary>
+        /// Add a new imported schedule
+        /// </summary>
+        /// <param name="importLines"></param>
+        /// <param name="cells"></param>
+        /// <param name="faculty"></param>
+        /// <param name="section"></param>
+        /// <param name="row"></param>
         private void AddRow(List<ImportLine> importLines, ExcelRange cells, Faculty faculty, Section section, int row)
         {
             var group = UnitOfWork.GroupRepository.SingleOrDefault(g => g.Name == cells[row, 1].Value.ToString() && g.SectionId == section.SectionId);
@@ -121,6 +146,11 @@ namespace Schedent.BusinessLogic.Services
             });
         }
 
+        /// <summary>
+        /// Add the imported schedules to the database
+        /// </summary>
+        /// <param name="importLines"></param>
+        /// <param name="document"></param>
         public void ImportTimeTable(IEnumerable<ImportLine> importLines, Document document)
         {
             var groupedSchedules = importLines.GroupBy(il => il.Subgroup);
@@ -151,6 +181,12 @@ namespace Schedent.BusinessLogic.Services
             Save();
         }
 
+        /// <summary>
+        /// Add a new timetable entity
+        /// </summary>
+        /// <param name="subgroup"></param>
+        /// <param name="document"></param>
+        /// <returns></returns>
         public TimeTable AddTimeTable(Subgroup subgroup, Document document)
         {
             var timeTable = new TimeTable
@@ -171,6 +207,10 @@ namespace Schedent.BusinessLogic.Services
             return timeTable;
         }
 
+        /// <summary>
+        /// Inactive the old timetable
+        /// </summary>
+        /// <param name="subgroupId"></param>
         public void InactivateSubgroupTimeTable(int subgroupId)
         {
             var timetable = UnitOfWork.TimeTableRepository.SingleOrDefault(t => t.IsActive && t.SubgroupId == subgroupId);
@@ -180,6 +220,11 @@ namespace Schedent.BusinessLogic.Services
             }
         }
 
+        /// <summary>
+        /// Add notifications with the changes from the imported timetable
+        /// </summary>
+        /// <param name="newTimeTable"></param>
+        /// <returns></returns>
         public IEnumerable<Domain.Entities.Notification> AddNotifications(TimeTable newTimeTable)
         {
             var oldTimeTable = UnitOfWork.TimeTableRepository.SingleOrDefault(t => t.IsActive && t.SubgroupId == newTimeTable.SubgroupId);
@@ -216,6 +261,13 @@ namespace Schedent.BusinessLogic.Services
             return notifications;
         }
 
+        /// <summary>
+        /// Set the notifications
+        /// </summary>
+        /// <param name="notifications"></param>
+        /// <param name="notificationFactory"></param>
+        /// <param name="newSchedule"></param>
+        /// <param name="oldSchedule"></param>
         private static void AddNotifications(List<Domain.Entities.Notification> notifications, NotificationFactory notificationFactory, Schedule newSchedule, Schedule oldSchedule)
         {
             if (newSchedule.ProfessorId != oldSchedule.ProfessorId)
@@ -244,6 +296,10 @@ namespace Schedent.BusinessLogic.Services
             }
         }
 
+        /// <summary>
+        /// Add Google Calendar events
+        /// </summary>
+        /// <param name="timeTable"></param>
         public void AddEvents(TimeTable timeTable)
         {
             foreach (var schedule in timeTable.Schedules)
@@ -252,6 +308,10 @@ namespace Schedent.BusinessLogic.Services
             }
         }
 
+        /// <summary>
+        /// Retrieve the Google Calendar service
+        /// </summary>
+        /// <returns></returns>
         public CalendarService GetService()
         {
             string[] Scopes = { CalendarService.Scope.Calendar };
@@ -270,6 +330,10 @@ namespace Schedent.BusinessLogic.Services
             });
         }
 
+        /// <summary>
+        /// Create a new Google Calendar event
+        /// </summary>
+        /// <param name="schedule"></param>
         public void CreateEvent(Schedule schedule)
         {
             var semDayStart = schedule.Week == 2 ? "21" : "14";
@@ -322,6 +386,10 @@ namespace Schedent.BusinessLogic.Services
             }
         }
 
+        /// <summary>
+        /// Create the Google Calendar events forr new user
+        /// </summary>
+        /// <param name="schedule"></param>
         public void CreateEventForNewUser(Schedule schedule)
         {
             var semDayStart = schedule.Week == 2 ? "21" : "14";
@@ -368,6 +436,10 @@ namespace Schedent.BusinessLogic.Services
             }
         }
 
+        /// <summary>
+        /// Add user to already existing event
+        /// </summary>
+        /// <param name="schedule"></param>
         public void AddAtendeeToEvent(Schedule schedule)
         {
             var service = GetService();
@@ -393,6 +465,11 @@ namespace Schedent.BusinessLogic.Services
             }
         }
 
+        /// <summary>
+        /// Send the notifications to the users
+        /// </summary>
+        /// <param name="notifications"></param>
+        /// <returns></returns>
         public static async Task SendFirebaseNotificationsAsync(IEnumerable<Domain.Entities.Notification> notifications)
         {
             foreach (var notification in notifications)

@@ -13,12 +13,23 @@ namespace Schedent.API.Controllers
         private readonly SubgroupService _subgroupService;
         private readonly ILogger<SubgroupController> _logger;
 
+        /// <summary>
+        /// SubgroupController constructor
+        /// Inject the SubgroupService and the logger
+        /// </summary>
+        /// <param name="subgroupService"></param>
+        /// <param name="logger"></param>
         public SubgroupController(SubgroupService subgroupService, ILogger<SubgroupController> logger)
         {
             _subgroupService = subgroupService;
             _logger = logger;
         }
 
+        /// <summary>
+        /// Endpoint for retrieving all the subgroups of the given group
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("All")]
         public IActionResult All([FromQuery] int groupId)

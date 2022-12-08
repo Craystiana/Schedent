@@ -12,12 +12,22 @@ namespace Schedent.WorkerService
         private readonly ILogger<Worker> _logger;
         private readonly ImportService _importService;
 
+        /// <summary>
+        /// Worker constructor
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="importService"></param>
         public Worker(ILogger<Worker> logger, ImportService importService)
         {
             _logger = logger;
             _importService = importService;
         }
 
+        /// <summary>
+        /// Execute the worker
+        /// </summary>
+        /// <param name="stoppingToken"></param>
+        /// <returns></returns>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             try

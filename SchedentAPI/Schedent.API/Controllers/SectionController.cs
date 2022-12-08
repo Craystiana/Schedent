@@ -13,12 +13,23 @@ namespace Schedent.API.Controllers
         private readonly SectionService _sectionService;
         private readonly ILogger<SectionController> _logger;
 
+        /// <summary>
+        /// SectionController constructor
+        /// Inject the SectionService and the logger
+        /// </summary>
+        /// <param name="sectionService"></param>
+        /// <param name="logger"></param>
         public SectionController(SectionService sectionService, ILogger<SectionController> logger)
         {
             _sectionService = sectionService;
             _logger = logger;
         }
 
+        /// <summary>
+        /// Endpoint for retrieving all the sections of the given faculty
+        /// </summary>
+        /// <param name="facultyId"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("All")]
         public IActionResult All([FromQuery] int facultyId)

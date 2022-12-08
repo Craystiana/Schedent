@@ -13,12 +13,22 @@ namespace Schedent.API.Controllers
         private readonly FacultyService _facultyService;
         private readonly ILogger<FacultyController> _logger;
 
+        /// <summary>
+        /// FacultyController constructor
+        /// Inject the FacultyService and the logger
+        /// </summary>
+        /// <param name="facultyService"></param>
+        /// <param name="logger"></param>
         public FacultyController(FacultyService facultyService, ILogger<FacultyController> logger)
         {
             _facultyService = facultyService;
             _logger = logger;
         }
 
+        /// <summary>
+        /// Endpoint for retrieving the list of all faculties present in the database
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("All")]
         public IActionResult All()

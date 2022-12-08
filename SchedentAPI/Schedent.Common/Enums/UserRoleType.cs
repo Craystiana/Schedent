@@ -1,5 +1,9 @@
 ﻿namespace Schedent.Common.Enums
 {
+    /// <summary>
+    /// The User roles used in the application
+    /// Admin, Student, Professor and Service
+    /// </summary>
     public enum UserRoleType
     {
         Admin = 1,

@@ -1,5 +1,6 @@
 ﻿namespace Schedent.BusinessLogic.Config
 {
+    // Model used for mapping the GoogleCalendarSettings from the appsettings
     public class GoogleCalendarSettings
     {
         public string ClientId { get; set; }

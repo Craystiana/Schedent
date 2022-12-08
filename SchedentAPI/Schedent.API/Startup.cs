@@ -1,3 +1,5 @@
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Schedent.BusinessLogic.Config;
 using Schedent.BusinessLogic.Services;
 using Schedent.Common;
 using Schedent.DataAccess;
@@ -17,12 +20,6 @@ using Schedent.Domain.Interfaces.Repositories;
 using System;
 using System.IO;
 using System.Reflection;
-using Schedent.API.Hubs;
-using Microsoft.AspNetCore.SignalR;
-using Schedent.API.Authorization;
-using Schedent.BusinessLogic.Config;
-using FirebaseAdmin;
-using Google.Apis.Auth.OAuth2;
 
 namespace Schedent.API
 {
@@ -41,6 +38,7 @@ namespace Schedent.API
         {
             services.AddControllers();
 
+            // Swagger configuration
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo
@@ -54,14 +52,16 @@ namespace Schedent.API
                 options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
             });
 
+            // Database configuration using the connection string  from appsettings
             services.AddDbContext<SchedentContext>(options => options.UseSqlServer(Settings.DatabaseConnectionString));
 
-            services.AddCors(options => options.AddPolicy("AllowAllOrigins", builder => builder.AllowAnyOrigin()
-                                                                                   .AllowAnyMethod()
-                                                                                   .AllowAnyHeader()));
+            // Cors configuration
+            services.AddCors(options => options.AddPolicy("AllowAllOrigins", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
-            // UnitOfWork and Repositories
+            // UnitOfWork
             services.AddScoped<IUnitOfWork, UnitOfWork>(_ => new UnitOfWork(Settings.DatabaseConnectionString));
+
+            // Repositories
             services.AddScoped<IRepository<UserRole>, Repository<UserRole>>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IRepository<Document>, Repository<Document>>();
@@ -87,7 +87,9 @@ namespace Schedent.API
             services.AddScoped<ScheduleService>();
             services.AddScoped<NotificationService>();
 
+            // This configuration allows the GoogleCalendarSettings section from appsettings to be mapped to the GoogleCalendarSettings dto
             services.Configure<GoogleCalendarSettings>(Configuration.GetSection(nameof(GoogleCalendarSettings)));
+            // This configuration allows the FirebaseSettings section from appsettings to be mapped to the FirebaseSettings dto
             services.Configure<FirebaseSettings>(Configuration.GetSection(nameof(FirebaseSettings)));
 
             // JWT authentication
@@ -109,13 +111,13 @@ namespace Schedent.API
                 };
             });
 
-            services.AddSignalR();
-            services.AddSingleton<IUserIdProvider, UserProvider>();
-
+            // Configure Firebase using the credentials from the firebase_settings.json
             FirebaseApp.Create(new AppOptions()
             {
                 Credential = GoogleCredential.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "firebase_settings.json")),
             });
+
+            // Azure Application Insights configuration
             services.AddApplicationInsightsTelemetry();
         }
 
@@ -134,24 +136,28 @@ namespace Schedent.API
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(options =>
             {
+                // Swagger endpoint
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "Schedent API " + Settings.Version);
 
                 // To serve SwaggerUI at application's root page, set the RoutePrefix property to an empty string.
                 options.RoutePrefix = string.Empty;
             });
 
+            // Adds middleware for redirecting HTTP requests to  HTTPS
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
+            // Enable authorization capabilities
             app.UseAuthorization();
 
+            // Allow cross domain requests
             app.UseCors("AllowAllOrigins");
 
             app.UseEndpoints(endpoints =>
             {
+                // Add endpoints for controller actions without specifying any routes
                 endpoints.MapControllers();
-                endpoints.MapHub<NotificationHub>("/notificationHub");
             });
         }
     }

@@ -13,12 +13,22 @@ namespace Schedent.API.Controllers
         private readonly NotificationService _notificationService;
         private readonly ILogger<NotificationController> _logger;
 
+        /// <summary>
+        /// NotificationController constructor
+        /// Injejct the NotificationService and the logger
+        /// </summary>
+        /// <param name="notificationService"></param>
+        /// <param name="logger"></param>
         public NotificationController(NotificationService notificationService, ILogger<NotificationController> logger)
         {
             _notificationService = notificationService;
             _logger = logger;
         }
 
+        /// <summary>
+        /// Endpoint for retrieving all the notifications of the logged in user
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("All")]
         public IActionResult All()

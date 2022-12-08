@@ -6,8 +6,8 @@ export const environment = {
   production: false
 };
 
-//export const API_URL = 'https://localhost:44389/api';
-export const API_URL = 'https://schedent.azurewebsites.net/api';
+export const API_URL = 'https://localhost:44389/api';
+//export const API_URL = 'https://schedent.azurewebsites.net/api';
 export const LOGIN_URL = '/user/login'; 
 export const REGISTER_URL = '/user/register';
 export const FACULTY_LIST_URL = '/faculty/all';

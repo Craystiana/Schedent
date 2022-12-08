@@ -12,6 +12,11 @@ namespace Schedent.BusinessLogic.Services
 {
     public static class JwtService
     {
+        /// <summary>
+        /// Create the userId and userRoleId claims and call the GetToken method with the list of claims
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         public static string GenerateToken(User user)
         {
             var claims = new List<Claim>
@@ -23,16 +28,12 @@ namespace Schedent.BusinessLogic.Services
             return GetToken(claims);
         }
 
-        public static string GenerateTokenForService()
-        {
-            var claims = new List<Claim>
-            {
-                new Claim(((int)TokenClaim.UserRoleId).ToString(), ((int)UserRoleType.Service).ToString()),
-            };
-
-            return GetToken(claims);
-        }
-
+        /// <summary>
+        /// Retrieve the desired claim from the token
+        /// </summary>
+        /// <param name="claimKey"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public static string GetClaim(TokenClaim claimKey, string token)
         {
             var handler = new JwtSecurityTokenHandler();
@@ -41,6 +42,11 @@ namespace Schedent.BusinessLogic.Services
             return tokenSecure.Claims.First(claim => claim.Type == ((int)claimKey).ToString()).Value;
         }
 
+        /// <summary>
+        /// Generate the token using the passed claims
+        /// </summary>
+        /// <param name="claims"></param>
+        /// <returns></returns>
         private static string GetToken(IEnumerable<Claim> claims) 
         {
             var tokenHandler = new JwtSecurityTokenHandler();
