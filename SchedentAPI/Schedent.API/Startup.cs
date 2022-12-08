@@ -56,7 +56,7 @@ namespace Schedent.API
             services.AddDbContext<SchedentContext>(options => options.UseSqlServer(Settings.DatabaseConnectionString));
 
             // Cors configuration
-            services.AddCors(options => options.AddPolicy("AllowAllOrigins", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+            services.AddCors(options => options.AddPolicy("AllowAllOrigins", builder => builder.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:8100")));
 
             // UnitOfWork
             services.AddScoped<IUnitOfWork, UnitOfWork>(_ => new UnitOfWork(Settings.DatabaseConnectionString));
