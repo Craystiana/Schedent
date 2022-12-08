@@ -1,5 +1,4 @@
-﻿using FirebaseAdmin.Messaging;
-using Google.Apis.Auth.OAuth2;
+﻿using Google.Apis.Auth.OAuth2;
 using Google.Apis.Calendar.v3;
 using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Services;
@@ -8,7 +7,7 @@ using Microsoft.Extensions.Options;
 using OfficeOpenXml;
 using Schedent.BusinessLogic.Config;
 using Schedent.BusinessLogic.Factories;
-using Schedent.Common.Enums;
+using Schedent.BusinessLogic.Helpers;
 using Schedent.Domain.DTO.Import;
 using Schedent.Domain.Entities;
 using Schedent.Domain.Interfaces;
@@ -86,7 +85,7 @@ namespace Schedent.BusinessLogic.Services
 
                 ImportTimeTable(importLines, document);
                 var notifications = UnitOfWork.NotificationRepository.GetNotificationsByIds();
-                await SendFirebaseNotificationsAsync(notifications);
+                await ImportHelper.SendFirebaseNotificationsAsync(notifications);
             }
 
             foreach (var user in users)
@@ -103,7 +102,7 @@ namespace Schedent.BusinessLogic.Services
                     }
                     else
                     {
-                        CreateEventForNewUser(schedule);
+                        CreateEvent(schedule, false);
                     }
                 }
 
@@ -208,12 +207,22 @@ namespace Schedent.BusinessLogic.Services
         }
 
         /// <summary>
+        /// Retrieve the current timetable of the given subgroup
+        /// </summary>
+        /// <param name="subgroupId"></param>
+        /// <returns></returns>
+        private TimeTable GetCurrentTimeTableForSubgroup(int subgroupId)
+        {
+            return UnitOfWork.TimeTableRepository.SingleOrDefault(t => t.IsActive && t.SubgroupId == subgroupId);
+        }
+
+        /// <summary>
         /// Inactive the old timetable
         /// </summary>
         /// <param name="subgroupId"></param>
         public void InactivateSubgroupTimeTable(int subgroupId)
         {
-            var timetable = UnitOfWork.TimeTableRepository.SingleOrDefault(t => t.IsActive && t.SubgroupId == subgroupId);
+            TimeTable timetable = GetCurrentTimeTableForSubgroup(subgroupId);
             if (timetable != null)
             {
                 timetable.IsActive = false;
@@ -227,7 +236,7 @@ namespace Schedent.BusinessLogic.Services
         /// <returns></returns>
         public IEnumerable<Domain.Entities.Notification> AddNotifications(TimeTable newTimeTable)
         {
-            var oldTimeTable = UnitOfWork.TimeTableRepository.SingleOrDefault(t => t.IsActive && t.SubgroupId == newTimeTable.SubgroupId);
+            var oldTimeTable = GetCurrentTimeTableForSubgroup(newTimeTable.SubgroupId);
             var notifications = new List<Domain.Entities.Notification>();
 
             if (oldTimeTable == null)
@@ -252,48 +261,13 @@ namespace Schedent.BusinessLogic.Services
                                                                      && os.ScheduleTypeId == newSchedule.ScheduleTypeId);
 
                     if (oldSchedule == null) continue;
-                    AddNotifications(notifications, notificationFactory, newSchedule, oldSchedule);
+                    ImportHelper.AddNotifications(notifications, notificationFactory, newSchedule, oldSchedule);
                 }
             }
 
             UnitOfWork.NotificationRepository.AddRange(notifications);
 
             return notifications;
-        }
-
-        /// <summary>
-        /// Set the notifications
-        /// </summary>
-        /// <param name="notifications"></param>
-        /// <param name="notificationFactory"></param>
-        /// <param name="newSchedule"></param>
-        /// <param name="oldSchedule"></param>
-        private static void AddNotifications(List<Domain.Entities.Notification> notifications, NotificationFactory notificationFactory, Schedule newSchedule, Schedule oldSchedule)
-        {
-            if (newSchedule.ProfessorId != oldSchedule.ProfessorId)
-            {
-                notifications.AddRange(notificationFactory.GetNotification(nameof(newSchedule.ProfessorId), oldSchedule, newSchedule));
-            }
-
-            if (newSchedule.Day != oldSchedule.Day)
-            {
-                notifications.AddRange(notificationFactory.GetNotification(nameof(newSchedule.Day), oldSchedule, newSchedule));
-            }
-
-            if (newSchedule.Duration != oldSchedule.Duration)
-            {
-                notifications.AddRange(notificationFactory.GetNotification(nameof(newSchedule.Duration), oldSchedule, newSchedule));
-            }
-
-            if (newSchedule.StartsAt != oldSchedule.StartsAt)
-            {
-                notifications.AddRange(notificationFactory.GetNotification(nameof(newSchedule.StartsAt), oldSchedule, newSchedule));
-            }
-
-            if (newSchedule.Week != oldSchedule.Week)
-            {
-                notifications.AddRange(notificationFactory.GetNotification(nameof(newSchedule.Week), oldSchedule, newSchedule));
-            }
         }
 
         /// <summary>
@@ -334,105 +308,35 @@ namespace Schedent.BusinessLogic.Services
         /// Create a new Google Calendar event
         /// </summary>
         /// <param name="schedule"></param>
-        public void CreateEvent(Schedule schedule)
+        public void CreateEvent(Schedule schedule, bool isUpdatedEvent = true)
         {
             var semDayStart = schedule.Week == 2 ? "21" : "14";
             var semMonthStart = "02";
             var yearStart = "2022";
             var recurrence = $"{"RRULE:FREQ=WEEKLY;UNTIL=20220508T200000Z"}{(schedule.Week == 0 ? "" : ";INTERVAL=2")}";
-            var atendeeEmails = UnitOfWork.UserRepository.Find(u => u.SubgroupId == schedule.TimeTable.SubgroupId)
-                                                         .Select(u => new EventAttendee
-                                                         {
-                                                             Email = u.Email
-                                                         }).ToList();
+            List<EventAttendee> atendeeEmails = GetAtendeeEmails(schedule);
             atendeeEmails.AddRange(UnitOfWork.UserRepository.Find(u => u.ProfessorId == schedule.ProfessorId).Select(u => new EventAttendee
             {
                 Email = u.Email
             }).ToList());
-            var oldSchedule = UnitOfWork.ScheduleRepository.SingleOrDefault(s => s.TimeTable.SubgroupId == schedule.TimeTable.SubgroupId && s.TimeTable.IsActive && s.SubjectId == schedule.SubjectId && s.ScheduleType == schedule.ScheduleType);
             var service = GetService();
 
             if (atendeeEmails.Any())
             {
-                var ev = new Event
-                {
-                    Summary = schedule.Subject.Name,
-                    Organizer = new Event.OrganizerData
-                    {
-                        DisplayName = schedule.Professor.Name,
-                    },
-                    Start = new EventDateTime
-                    {
-                        DateTime = Convert.ToDateTime((int.Parse(semDayStart) + (int)Enum.Parse(typeof(WeekDays), schedule.Day)).ToString() + "/" + semMonthStart + "/" + yearStart + " " + schedule.StartsAt + ":00:00"),
-                        TimeZone = "Europe/Bucharest"
-                    },
-                    End = new EventDateTime
-                    {
-                        DateTime = Convert.ToDateTime((int.Parse(semDayStart) + (int)Enum.Parse(typeof(WeekDays), schedule.Day)).ToString() + "/" + semMonthStart + "/" + yearStart + " " + (int.Parse(schedule.StartsAt) + schedule.Duration).ToString() + ":00:00"),
-                        TimeZone = "Europe/Bucharest"
-                    },
-                    Recurrence = new string[] { recurrence },
-                    Attendees = atendeeEmails
-                };
+                var ev = ImportHelper.CreateEventEntity(schedule, semDayStart, semMonthStart, yearStart, recurrence, atendeeEmails);
 
                 var createdEvent = service.Events.Insert(ev, "primary").Execute();
                 schedule.EventId = createdEvent.Id;
             }
 
-            if (oldSchedule is not null && oldSchedule.EventId is not null)
+            if (isUpdatedEvent)
             {
-                try { service.Events.Delete("primary", oldSchedule.EventId).Execute(); }
-                catch { /* If the Google Calendar deletion throws an error it means that the event is already deleted, therefore nothing should be done */ }
-            }
-        }
-
-        /// <summary>
-        /// Create the Google Calendar events forr new user
-        /// </summary>
-        /// <param name="schedule"></param>
-        public void CreateEventForNewUser(Schedule schedule)
-        {
-            var semDayStart = schedule.Week == 2 ? "21" : "14";
-            var semMonthStart = "02";
-            var yearStart = "2022";
-            var recurrence = $"{"RRULE:FREQ=WEEKLY;UNTIL=20220508T200000Z"}{(schedule.Week == 0 ? "" : ";INTERVAL=2")}";
-            var atendeeEmails = UnitOfWork.UserRepository.Find(u => u.SubgroupId == schedule.TimeTable.SubgroupId)
-                                                         .Select(u => new EventAttendee
-                                                         {
-                                                             Email = u.Email
-                                                         }).ToList();
-            atendeeEmails.AddRange(UnitOfWork.UserRepository.Find(u => u.ProfessorId == schedule.ProfessorId).Select(u => new EventAttendee
-            {
-                Email = u.Email
-            }).ToList());
-
-            var service = GetService();
-
-            if (atendeeEmails.Any())
-            {
-                var ev = new Event
+                var oldSchedule = UnitOfWork.ScheduleRepository.SingleOrDefault(s => s.TimeTable.SubgroupId == schedule.TimeTable.SubgroupId && s.TimeTable.IsActive && s.SubjectId == schedule.SubjectId && s.ScheduleType == schedule.ScheduleType);
+                if (oldSchedule is not null && oldSchedule.EventId is not null)
                 {
-                    Summary = schedule.Subject.Name,
-                    Organizer = new Event.OrganizerData
-                    {
-                        DisplayName = schedule.Professor.Name,
-                    },
-                    Start = new EventDateTime
-                    {
-                        DateTime = Convert.ToDateTime((int.Parse(semDayStart) + (int)Enum.Parse(typeof(WeekDays), schedule.Day)).ToString() + "/" + semMonthStart + "/" + yearStart + " " + schedule.StartsAt + ":00:00"),
-                        TimeZone = "Europe/Bucharest"
-                    },
-                    End = new EventDateTime
-                    {
-                        DateTime = Convert.ToDateTime((int.Parse(semDayStart) + (int)Enum.Parse(typeof(WeekDays), schedule.Day)).ToString() + "/" + semMonthStart + "/" + yearStart + " " + (int.Parse(schedule.StartsAt) + schedule.Duration).ToString() + ":00:00"),
-                        TimeZone = "Europe/Bucharest"
-                    },
-                    Recurrence = new string[] { recurrence },
-                    Attendees = atendeeEmails
-                };
-
-                var createdEvent = service.Events.Insert(ev, "primary").Execute();
-                schedule.EventId = createdEvent.Id;
+                    try { service.Events.Delete("primary", oldSchedule.EventId).Execute(); }
+                    catch { /* If the Google Calendar deletion throws an error it means that the event is already deleted, therefore nothing should be done */ }
+                }
             }
         }
 
@@ -443,11 +347,7 @@ namespace Schedent.BusinessLogic.Services
         public void AddAtendeeToEvent(Schedule schedule)
         {
             var service = GetService();
-            var atendeeEmails = UnitOfWork.UserRepository.Find(u => u.SubgroupId == schedule.TimeTable.SubgroupId)
-                                                         .Select(u => new EventAttendee
-                                                         {
-                                                             Email = u.Email
-                                                         }).ToList();
+            var atendeeEmails = GetAtendeeEmails(schedule);
             atendeeEmails.AddRange(UnitOfWork.UserRepository.Find(u => u.ProfessorId == schedule.ProfessorId).Select(u => new EventAttendee
             {
                 Email = u.Email
@@ -461,37 +361,22 @@ namespace Schedent.BusinessLogic.Services
             }
             else
             {
-                CreateEventForNewUser(schedule);
+                CreateEvent(schedule, false);
             }
         }
 
         /// <summary>
-        /// Send the notifications to the users
+        /// Get the list of emails for event atendees
         /// </summary>
-        /// <param name="notifications"></param>
+        /// <param name="schedule"></param>
         /// <returns></returns>
-        public static async Task SendFirebaseNotificationsAsync(IEnumerable<Domain.Entities.Notification> notifications)
+        private List<EventAttendee> GetAtendeeEmails(Schedule schedule)
         {
-            foreach (var notification in notifications)
-            {
-                if ((notification.Subgroup?.Users != null && notification.Subgroup?.Users.Count != 0) || notification.Professor?.User != null)
-                {
-                    var message = new MulticastMessage
-                    {
-                        Tokens = notification.Subgroup != null ? 
-                                 notification.Subgroup.Users.Select(u => u.DeviceToken).ToList() : 
-                                 new List<string>() { notification.Professor.User.DeviceToken },
-                        Notification = new FirebaseAdmin.Messaging.Notification
-                        {
-                            Title = "Orarul tău a fost modificat",
-                            Body = notification.Message
-                        },
-                    };
-
-                    await FirebaseMessaging.DefaultInstance.SendMulticastAsync(message);
-                    notification.IsSent = true;
-                }
-            }
+            return UnitOfWork.UserRepository.Find(u => u.SubgroupId == schedule.TimeTable.SubgroupId)
+                                            .Select(u => new EventAttendee
+                                            {
+                                                Email = u.Email
+                                            }).ToList();
         }
     }
 }
